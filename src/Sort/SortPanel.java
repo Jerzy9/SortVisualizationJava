@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Random;
 
 public class SortPanel {
-    Random r = new Random();
+    private Random r = new Random();
     static List<Column> columns;
 
     private Color columnColor = Color.blue;
@@ -20,8 +20,7 @@ public class SortPanel {
     private int numOfAlgorithm;
     private int columnsMaxWidth,columnsMaxHeight;
 
-    public SortPanel(int size, int brickWidth, int brickHeight, int sleepTime, int numOfAlgorithm, int columnsMaxWidth, int columnsMaxHeight) {
-        this.size = size;
+    public SortPanel(int brickWidth, int brickHeight, int sleepTime, int numOfAlgorithm, int columnsMaxWidth, int columnsMaxHeight) {
         this.brickWidth = brickWidth;
         this.brickHeight = brickHeight;
         this.sleepTime = sleepTime;
@@ -31,7 +30,7 @@ public class SortPanel {
 
         columns = new ArrayList<>();
         createColumns();
-        shuffle();
+        //shuffle();
 
     }
     public void draw(Graphics g) {
@@ -47,6 +46,7 @@ public class SortPanel {
     public void createColumns() {
         //draw Columns
         size = (columnsMaxWidth / brickWidth);
+        System.out.println(size);
         brickHeight = columnsMaxHeight / size;
         int space = 10; //(MainFrame.WIDTH - fieldMaxWidth - 160)/2; try to center automatically
 

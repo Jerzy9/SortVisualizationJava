@@ -4,7 +4,7 @@ import Sort.SortPanel;
 
 public class BubbleSort {
 
-    void bubbleSort()
+   public void bubbleSort()
     {
         int n = SortPanel.columns.size();
         for (int i = 0; i < n-1; i++)

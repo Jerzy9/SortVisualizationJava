@@ -8,17 +8,22 @@ public class MainFrame extends JFrame implements Runnable{
     private Thread thread;
     private boolean running;
     private int ticks;
+
     private MainPanel mainPanel;
     private ToolBar toolBar;
     private FormPanel formPanel;
+
     static final int WIDTH = 1600, HEIGHT = 900;
+    private final int fieldMaxWidth = MainFrame.WIDTH-FormPanel.width-5, fieldMaxHeight = MainFrame.HEIGHT-ToolBar.height;  // width 1600 - 160 = 1440 // height 900 - 40
+
+    /////////////       MainFrame Constructor       ///////////// o lol dziala
 
     public MainFrame() {
         super("Sort Visualization");
         setLayout(new BorderLayout());
 
-        mainPanel = new MainPanel();
-        toolBar = new ToolBar();
+        mainPanel = new MainPanel(fieldMaxWidth, fieldMaxHeight);
+        toolBar = new ToolBar(20);
         formPanel = new FormPanel();
 
         add(mainPanel, BorderLayout.CENTER);
@@ -31,7 +36,13 @@ public class MainFrame extends JFrame implements Runnable{
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
+
+
+        start();
     }
+
+    /////////////       Thread        /////////////
+
     public void start() {
         thread = new Thread(this);
         thread.start();
@@ -58,7 +69,7 @@ public class MainFrame extends JFrame implements Runnable{
             tick();
             repaint();
             try {
-                thread.sleep(1000/30);
+                thread.sleep(1000/20);
             } catch (InterruptedException ex) {
                 ex.fillInStackTrace();
                 System.out.println("Thread.sleep error");
@@ -69,7 +80,7 @@ public class MainFrame extends JFrame implements Runnable{
     /////////////       Graphics        /////////////
 
     public void paint(Graphics g) {
-
+        formPanel.draw(g);
+        toolBar.draw(g);
     }
-
 }

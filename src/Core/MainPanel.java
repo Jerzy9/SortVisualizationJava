@@ -10,27 +10,33 @@ public class MainPanel extends JPanel implements Runnable {
     /////////////       Variables       /////////////
 
     public static Thread thread;
+    private boolean running = false;
+    private int ticks = 0;
+
     private SortPanel sortPanel;
 
-    private boolean running = false;
-    int ticks = 0;
-    final private int fieldMaxWidth = MainFrame.WIDTH-FormPanel.width-5, fieldMaxHeight = MainFrame.HEIGHT-ToolBar.height;    // width 1600 - 160 = 1440 // height 900 - 40
+    private int fieldMaxWidth, fieldMaxHeight;
     final private int marginWidth = 30, marginHeight = 60;
-    final private int columnsMaxWidth = fieldMaxWidth - marginWidth, columnsMaxHeight = fieldMaxHeight - marginHeight;      //width 1440 - 30(margin) = 1420 // height 860 - 60(margin) = 800
+    private int columnsMaxWidth, columnsMaxHeight;    //width 1440 - 30(margin) = 1420 // height 860 - 60(margin) = 800
     private int size;
-    private int brickWidth = 16, brickHeight;
+    private int brickWidth = 2, brickHeight;
     private Color backgroundColor = Color.darkGray;
 
-    int sleepTime = 5, numOfAlgorithm = 1;
+    private int sleepTime = 5, numOfAlgorithm = 1;
 
     /////////////       MainPanel Constructor       /////////////
 
-    public MainPanel() {
+    public MainPanel(int fieldMaxWidth, int fieldMaxHeight) {
+        this.fieldMaxWidth = fieldMaxWidth;
+        this.fieldMaxHeight = fieldMaxHeight;
 
-        sortPanel = new SortPanel(size, brickWidth, brickHeight, sleepTime, numOfAlgorithm, columnsMaxWidth, columnsMaxHeight);
+        columnsMaxWidth = fieldMaxWidth - marginWidth;
+        columnsMaxHeight = fieldMaxHeight - marginHeight;
 
-        setBackground(Color.black);
+        sortPanel = new SortPanel(brickWidth, brickHeight, sleepTime, numOfAlgorithm, columnsMaxWidth, columnsMaxHeight);
+
         start();
+
     }
 
     /////////////       Thread Functions        /////////////
@@ -50,7 +56,6 @@ public class MainPanel extends JPanel implements Runnable {
     }
     public void tick() {
         if(ticks > 5) {
-
             ticks = 0;
         }
         ticks++;
