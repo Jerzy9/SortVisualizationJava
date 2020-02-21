@@ -1,86 +1,128 @@
 package Core;
 
+import Components.NumberListener;
+import Sort.SortPanel;
+
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 
+public class MainFrame extends JFrame{
+    private int WIDTH = 1600, HEIGHT = 900;
 
-public class MainFrame extends JFrame implements Runnable{
-    private Thread thread;
-    private boolean running;
-    private int ticks;
+    Color c2 = new Color(160,233,210);
 
-    private MainPanel mainPanel;
-    private ToolBar toolBar;
-    private FormPanel formPanel;
+    private Container mainContainer;
 
-    static final int WIDTH = 1600, HEIGHT = 900;
-    private final int fieldMaxWidth = MainFrame.WIDTH-FormPanel.width-5, fieldMaxHeight = MainFrame.HEIGHT-ToolBar.height;  // width 1600 - 160 = 1440 // height 900 - 40
+    private Color bgColor = Color.white;
 
-    /////////////       MainFrame Constructor       ///////////// o lol dziala
+    private TopPanel topPanel;
+    private int topPanelWidth = WIDTH - 300,
+                topPanelHeight = 100;
+
+    private SortPanel sortPanel;
+    private int sortPanelWidth = WIDTH - 300,
+                sortPanelHeight = HEIGHT - topPanelHeight;
+
+    private AlgorithmPanel algorithmPanel;
+    private int sidePanelWidth = 300,
+                sidePanelHeight = HEIGHT - 250;
+
+    private StatsPanel statsPanel;
+    private int statsPanelWidth = 300,
+                statsPanelHeight = 250;
+
+    /////////////       MainFrame Constructor       /////////////
 
     public MainFrame() {
-        super("Sort Visualization");
-        setLayout(new BorderLayout());
+        ///// MAIN CONTAINER /////
+        mainContainer = this.getContentPane();
+        mainContainer.setLayout(new BorderLayout(8,6));
+        mainContainer.setBackground(Color.black);
+        //this.getRootPane().setBorder(BorderFactory.createMatteBorder(4,4,4,4,Color.black));     //border na około wszystkiego
 
-        mainPanel = new MainPanel(fieldMaxWidth, fieldMaxHeight);
-        toolBar = new ToolBar(20);
-        formPanel = new FormPanel();
+        ///// MIDDLE CONTAINER /////
+        Container middleContainer = new Container();
+        middleContainer.setLayout(new BoxLayout(middleContainer, BoxLayout.Y_AXIS));
 
-        add(mainPanel, BorderLayout.CENTER);
-        add(toolBar, BorderLayout.SOUTH);
-        add(formPanel, BorderLayout.WEST);
+        // Top Panel
+        topPanel = new TopPanel(topPanelWidth, topPanelHeight, bgColor);
+        topPanel.setBorder(new LineBorder(Color.black,4));
 
+        topPanel.setButtonListener(new NumberListener() {
+            @Override
+            public void numberEmitted(int number) {
+                if(number == 1) {
+                    sortPanel.startOn();
+                } else if (number == 2) {
+                    sortPanel.startOff();
+                } else if (number == 3) {
+                    sortPanel.reset();
+                }
+            }
+        });
+        topPanel.setSizeListener(new NumberListener() {
+            @Override
+            public void numberEmitted(int number) {
+                sortPanel.setSize(number);
+            }
+        });
+        topPanel.setSpeedListener(new NumberListener() {
+            @Override
+            public void numberEmitted(int number) {
+                sortPanel.setSpeed(number);
+            }
+        });
+
+        // Sort Panel
+        sortPanel = new SortPanel(sortPanelWidth, sortPanelHeight, bgColor);
+        sortPanel.setBorder(new LineBorder(Color.black, 4));
+
+        ///// SIDE CONTAINER /////
+        Container sideContainer = new Container();
+        sideContainer.setLayout(new BoxLayout(sideContainer, BoxLayout.Y_AXIS));
+
+        //Algorithm Panel
+        algorithmPanel = new AlgorithmPanel(sidePanelWidth, sidePanelHeight, bgColor);
+        algorithmPanel.setBorder(new LineBorder(Color.black, 4));
+
+        algorithmPanel.setNumberListener(new NumberListener() {
+            @Override
+            public void numberEmitted(int number) {
+                sortPanel.setNumOfAlgorithm(number);
+            }
+        });
+
+        //Stats Panel
+        statsPanel = new StatsPanel(statsPanelWidth, statsPanelHeight, bgColor);
+        statsPanel.setBorder(new LineBorder(Color.black, 4));
+
+        ///// Adding Components /////
+        middleContainer.add(topPanel);
+        middleContainer.add(sortPanel);
+
+        sideContainer.add(algorithmPanel);
+        sideContainer.add(statsPanel);
+
+        mainContainer.add(middleContainer, BorderLayout.EAST);
+        mainContainer.add(sideContainer, BorderLayout.WEST);
+
+        setMainFrame();
+    }
+
+    /////////////       Graphics        /////////////
+
+    public void paint(Graphics g) {
+        super.paintComponents(g);
+    }
+
+    private void setMainFrame() {
+        setTitle("Sort Visualization");
         //window location's just for current device
         setLocation(150, 80);
         setSize(WIDTH, HEIGHT);
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
-
-
-        start();
-    }
-
-    /////////////       Thread        /////////////
-
-    public void start() {
-        thread = new Thread(this);
-        thread.start();
-        running = true;
-    }
-    public void stop() {
-        try {
-            thread.join();
-        } catch (InterruptedException ex) {
-            ex.fillInStackTrace();
-            System.out.println("Thread.join error");
-        }
-    }
-    public void tick() {
-        if(ticks > 5) {
-
-            ticks = 0;
-        }
-        ticks++;
-    }
-    @Override
-    public void run() {
-        while(running) {
-            tick();
-            repaint();
-            try {
-                thread.sleep(1000/20);
-            } catch (InterruptedException ex) {
-                ex.fillInStackTrace();
-                System.out.println("Thread.sleep error");
-            }
-        }
-    }
-
-    /////////////       Graphics        /////////////
-
-    public void paint(Graphics g) {
-        formPanel.draw(g);
-        toolBar.draw(g);
     }
 }

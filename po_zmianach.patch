@@ -1,0 +1,1165 @@
+Index: src/Core/FormPanel.java
+===================================================================
+--- src/Core/FormPanel.java	(revision eff1dd95d18a010e83968b6d0f789a8e2f9ec8c1)
++++ src/Core/FormPanel.java	(revision eff1dd95d18a010e83968b6d0f789a8e2f9ec8c1)
+@@ -1,41 +0,0 @@
+-package Core;
+-
+-import SortComponents.ButtonC;
+-
+-import javax.swing.*;
+-import java.awt.*;
+-import java.util.ArrayList;
+-import java.util.List;
+-
+-public class FormPanel extends JPanel {
+-    static final int width = 160;
+-    private int buttonWidth = 120;
+-    private int buttonHeight = 40;
+-    private int yButtonsStartPosition = 50, xButtonPosition = 25;
+-    private List<ButtonC> buttonList;
+-    private int numberOfButtons = 10;
+-
+-    public FormPanel() {
+-        //set side-form-bar's width
+-        Dimension dim = getPreferredSize();
+-        dim.width = width;
+-        setPreferredSize(dim);
+-
+-        buttonList = new ArrayList<>();
+-        createButtonList();
+-    }
+-    public void draw(Graphics g) {
+-        //background
+-        g.setColor(Color.red);
+-        g.fillRect(0,0,width, MainFrame.HEIGHT - ToolBar.height);
+-        for (int i = 0; i < buttonList.size(); i++) {
+-            buttonList.get(i).draw(g);
+-        }
+-    }
+-    public void createButtonList() {
+-
+-        for (int i = 0; i < numberOfButtons; i++) {
+-            buttonList.add(new ButtonC("Bubble Sort", xButtonPosition, yButtonsStartPosition+(i*buttonHeight), buttonWidth, buttonHeight));
+-        }
+-    }
+-}
+\ No newline at end of file
+Index: src/Core/MainPanel.java
+===================================================================
+--- src/Core/MainPanel.java	(revision eff1dd95d18a010e83968b6d0f789a8e2f9ec8c1)
++++ src/Core/MainPanel.java	(revision eff1dd95d18a010e83968b6d0f789a8e2f9ec8c1)
+@@ -1,88 +0,0 @@
+-package Core;
+-
+-import Sort.SortPanel;
+-
+-import javax.swing.*;
+-import java.awt.*;
+-
+-public class MainPanel extends JPanel implements Runnable {
+-
+-    /////////////       Variables       /////////////
+-
+-    public static Thread thread;
+-    private boolean running = false;
+-    private int ticks = 0;
+-
+-    private SortPanel sortPanel;
+-
+-    private int fieldMaxWidth, fieldMaxHeight;
+-    final private int marginWidth = 30, marginHeight = 60;
+-    private int columnsMaxWidth, columnsMaxHeight;    //width 1440 - 30(margin) = 1420 // height 860 - 60(margin) = 800
+-    private int size;
+-    private int brickWidth = 2, brickHeight;
+-    private Color backgroundColor = Color.darkGray;
+-
+-    private int sleepTime = 5, numOfAlgorithm = 1;
+-
+-    /////////////       MainPanel Constructor       /////////////
+-
+-    public MainPanel(int fieldMaxWidth, int fieldMaxHeight) {
+-        this.fieldMaxWidth = fieldMaxWidth;
+-        this.fieldMaxHeight = fieldMaxHeight;
+-
+-        columnsMaxWidth = fieldMaxWidth - marginWidth;
+-        columnsMaxHeight = fieldMaxHeight - marginHeight;
+-
+-        sortPanel = new SortPanel(brickWidth, brickHeight, sleepTime, numOfAlgorithm, columnsMaxWidth, columnsMaxHeight);
+-
+-        start();
+-
+-    }
+-
+-    /////////////       Thread Functions        /////////////
+-
+-    public void start() {
+-        thread = new Thread(this);
+-        thread.start();
+-        running = true;
+-    }
+-    public void stop() {
+-        try {
+-            thread.join();
+-        } catch (InterruptedException ex) {
+-            ex.fillInStackTrace();
+-            System.out.println("Thread.join error");
+-        }
+-    }
+-    public void tick() {
+-        if(ticks > 5) {
+-            ticks = 0;
+-        }
+-        ticks++;
+-    }
+-    @Override
+-    public void run() {
+-        while(running) {
+-            tick();
+-            repaint();
+-            try {
+-                thread.sleep(1000/30);
+-            } catch (InterruptedException ex) {
+-                ex.fillInStackTrace();
+-                System.out.println("Thread.sleep error");
+-            }
+-        }
+-    }
+-
+-    /////////////       Graphics        /////////////
+-
+-    public void paint(Graphics g) {
+-        //background
+-        g.setColor(backgroundColor);
+-        g.fillRect(0,0, fieldMaxWidth, fieldMaxHeight);
+-        //columns
+-        sortPanel.draw(g);
+-    }
+-
+-    /////////////       Functions       /////////////
+-}
+\ No newline at end of file
+Index: src/Core/ToolBar.java
+===================================================================
+--- src/Core/ToolBar.java	(revision eff1dd95d18a010e83968b6d0f789a8e2f9ec8c1)
++++ src/Core/ToolBar.java	(revision eff1dd95d18a010e83968b6d0f789a8e2f9ec8c1)
+@@ -1,20 +0,0 @@
+-package Core;
+-
+-import javax.swing.*;
+-import java.awt.*;
+-import java.awt.event.ActionEvent;
+-import java.awt.event.ActionListener;
+-
+-public class ToolBar extends JPanel {
+-    static int height;
+-    public ToolBar(int height) {
+-        Dimension dim = getPreferredSize();
+-        dim.height = height;
+-        setPreferredSize(dim);
+-    }
+-    public void draw(Graphics g) {
+-        //background
+-        g.setColor(Color.green);
+-        g.fillRect(0, MainFrame.HEIGHT-height, MainFrame.WIDTH,height);
+-    }
+-}
+\ No newline at end of file
+Index: src/SortComponents/Brick.java
+===================================================================
+--- src/SortComponents/Brick.java	(revision eff1dd95d18a010e83968b6d0f789a8e2f9ec8c1)
++++ src/SortComponents/Brick.java	(revision eff1dd95d18a010e83968b6d0f789a8e2f9ec8c1)
+@@ -1,29 +0,0 @@
+-package SortComponents;
+-
+-import Sort.SortPanel;
+-
+-import java.awt.*;
+-
+-public class Brick {
+-    private int x, y, width, height;
+-    private Color color;
+-
+-    public Brick(int x, int y,int width, int height, Color color) {
+-        this.x = x;
+-        this.y = y;
+-        this.width = width;
+-        this.height = height;
+-        this.color = color;
+-    }
+-
+-    public void drawBrick(Graphics g) {
+-        //brick
+-        g.setColor(color);
+-        g.fillRect(x,y,width,height);
+-
+-        //border lines
+-       /* g.setColor(Color.black);
+-        g.drawLine(x,y,x+width,y);
+-        g.drawLine(x,y,x, y+height);*/
+-    }
+-}
+\ No newline at end of file
+Index: src/SortComponents/ButtonC.java
+===================================================================
+--- src/SortComponents/ButtonC.java	(revision eff1dd95d18a010e83968b6d0f789a8e2f9ec8c1)
++++ src/SortComponents/ButtonC.java	(revision eff1dd95d18a010e83968b6d0f789a8e2f9ec8c1)
+@@ -1,33 +0,0 @@
+-package SortComponents;
+-
+-import java.awt.*;
+-
+-public class ButtonC {
+-    private int width;
+-    private int height;
+-    private int x,y;
+-    private String name;
+-
+-    public ButtonC(String name, int x, int y, int width, int height) {
+-        this.name = name;
+-        this.x = x;
+-        this.y = y;
+-        this.width = width;
+-        this.height = height;
+-    }
+-    public void draw(Graphics g) {
+-        g.clearRect(x,y,width,height);
+-        //border
+-        g.setColor(Color.black);
+-        g.fillRect(x,y, width,height);
+-        g.clearRect(x+5,y+5,width-10,height-10);
+-
+-        //in button
+-        g.setColor(Color.gray);
+-        g.fillRect(x+5,y+5,width-10,height-10);
+-
+-        //string
+-        g.setColor(Color.black);
+-        g.drawString(name,x+40,y+20);
+-    }
+-}
+Index: src/Core/StatsPanel.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/Core/StatsPanel.java	(date 1582276520345)
++++ src/Core/StatsPanel.java	(date 1582276520345)
+@@ -0,0 +1,55 @@
++package Core;
++
++import Components.TextLabel;
++
++import javax.swing.*;
++import javax.swing.border.LineBorder;
++import java.awt.*;
++
++public class StatsPanel extends JPanel {
++    private int width, height;
++    private Color bgColor;
++
++    public StatsPanel(int width, int height, Color bgColor) {
++        this.width = width;
++        this.height = height;
++        this.bgColor = bgColor;
++
++        TextLabel title = new TextLabel("Stats:", 24, bgColor);
++
++        int fontSize = 16;
++        JPanel layout = new JPanel();
++        layout.setBackground(bgColor);
++        layout.setLayout(new GridLayout(5,1,1,2));
++        layout.setBorder(new LineBorder(Color.black,4));
++
++        Dimension dim = new Dimension(150,100);
++        layout.setPreferredSize(new Dimension(dim));
++        layout.setMinimumSize(new Dimension(dim));
++        layout.setMaximumSize(new Dimension(dim));
++
++        TextLabel elements = new TextLabel("elements:  ", fontSize, bgColor);
++        TextLabel comparision   = new TextLabel("comparison:  ", fontSize, bgColor);
++        TextLabel conversions = new TextLabel("conversions:  ", fontSize, bgColor);
++        TextLabel time = new TextLabel("time:  ", fontSize, bgColor);
++        TextLabel delay = new TextLabel("delay:  ", fontSize, bgColor);
++
++        layout.add(elements);
++        layout.add(comparision);
++        layout.add(conversions);
++        layout.add(time);
++        layout.add(delay);
++
++        add(title, BorderLayout.NORTH);
++        add(layout, BorderLayout.CENTER);
++        setStatsPanel();
++    }
++    private void setStatsPanel() {
++        Dimension dim = new Dimension(width,height);
++        setOpaque(true);
++        setPreferredSize(dim);
++        setMaximumSize(dim);
++        setMinimumSize(dim);
++        setBackground(bgColor);
++    }
++}
+Index: src/Core/MainFrame.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/Core/MainFrame.java	(revision eff1dd95d18a010e83968b6d0f789a8e2f9ec8c1)
++++ src/Core/MainFrame.java	(date 1582300266343)
+@@ -1,86 +1,128 @@
+ package Core;
+ 
++import Components.NumberListener;
++import Sort.SortPanel;
++
+ import javax.swing.*;
++import javax.swing.border.LineBorder;
+ import java.awt.*;
+ 
++public class MainFrame extends JFrame{
++    private int WIDTH = 1600, HEIGHT = 900;
++
++    Color c2 = new Color(160,233,210);
++
++    private Container mainContainer;
++
++    private Color bgColor = Color.white;
+ 
+-public class MainFrame extends JFrame implements Runnable{
+-    private Thread thread;
+-    private boolean running;
+-    private int ticks;
++    private TopPanel topPanel;
++    private int topPanelWidth = WIDTH - 300,
++                topPanelHeight = 100;
+ 
+-    private MainPanel mainPanel;
+-    private ToolBar toolBar;
+-    private FormPanel formPanel;
++    private SortPanel sortPanel;
++    private int sortPanelWidth = WIDTH - 300,
++                sortPanelHeight = HEIGHT - topPanelHeight;
+ 
+-    static final int WIDTH = 1600, HEIGHT = 900;
+-    private final int fieldMaxWidth = MainFrame.WIDTH-FormPanel.width-5, fieldMaxHeight = MainFrame.HEIGHT-ToolBar.height;  // width 1600 - 160 = 1440 // height 900 - 40
++    private AlgorithmPanel algorithmPanel;
++    private int sidePanelWidth = 300,
++                sidePanelHeight = HEIGHT - 250;
+ 
+-    /////////////       MainFrame Constructor       ///////////// o lol dziala
++    private StatsPanel statsPanel;
++    private int statsPanelWidth = 300,
++                statsPanelHeight = 250;
++
++    /////////////       MainFrame Constructor       /////////////
+ 
+     public MainFrame() {
+-        super("Sort Visualization");
+-        setLayout(new BorderLayout());
++        ///// MAIN CONTAINER /////
++        mainContainer = this.getContentPane();
++        mainContainer.setLayout(new BorderLayout(8,6));
++        mainContainer.setBackground(Color.black);
++        //this.getRootPane().setBorder(BorderFactory.createMatteBorder(4,4,4,4,Color.black));     //border na około wszystkiego
++
++        ///// MIDDLE CONTAINER /////
++        Container middleContainer = new Container();
++        middleContainer.setLayout(new BoxLayout(middleContainer, BoxLayout.Y_AXIS));
++
++        // Top Panel
++        topPanel = new TopPanel(topPanelWidth, topPanelHeight, bgColor);
++        topPanel.setBorder(new LineBorder(Color.black,4));
++
++        topPanel.setButtonListener(new NumberListener() {
++            @Override
++            public void numberEmitted(int number) {
++                if(number == 1) {
++                    sortPanel.startOn();
++                } else if (number == 2) {
++                    sortPanel.startOff();
++                } else if (number == 3) {
++                    sortPanel.reset();
++                }
++            }
++        });
++        topPanel.setSizeListener(new NumberListener() {
++            @Override
++            public void numberEmitted(int number) {
++                sortPanel.setSize(number);
++            }
++        });
++        topPanel.setSpeedListener(new NumberListener() {
++            @Override
++            public void numberEmitted(int number) {
++                sortPanel.setSpeed(number);
++            }
++        });
++
++        // Sort Panel
++        sortPanel = new SortPanel(sortPanelWidth, sortPanelHeight, bgColor);
++        sortPanel.setBorder(new LineBorder(Color.black, 4));
++
++        ///// SIDE CONTAINER /////
++        Container sideContainer = new Container();
++        sideContainer.setLayout(new BoxLayout(sideContainer, BoxLayout.Y_AXIS));
++
++        //Algorithm Panel
++        algorithmPanel = new AlgorithmPanel(sidePanelWidth, sidePanelHeight, bgColor);
++        algorithmPanel.setBorder(new LineBorder(Color.black, 4));
++
++        algorithmPanel.setNumberListener(new NumberListener() {
++            @Override
++            public void numberEmitted(int number) {
++                sortPanel.setNumOfAlgorithm(number);
++            }
++        });
++
++        //Stats Panel
++        statsPanel = new StatsPanel(statsPanelWidth, statsPanelHeight, bgColor);
++        statsPanel.setBorder(new LineBorder(Color.black, 4));
++
++        ///// Adding Components /////
++        middleContainer.add(topPanel);
++        middleContainer.add(sortPanel);
++
++        sideContainer.add(algorithmPanel);
++        sideContainer.add(statsPanel);
+ 
+-        mainPanel = new MainPanel(fieldMaxWidth, fieldMaxHeight);
+-        toolBar = new ToolBar(20);
+-        formPanel = new FormPanel();
++        mainContainer.add(middleContainer, BorderLayout.EAST);
++        mainContainer.add(sideContainer, BorderLayout.WEST);
+ 
+-        add(mainPanel, BorderLayout.CENTER);
+-        add(toolBar, BorderLayout.SOUTH);
+-        add(formPanel, BorderLayout.WEST);
++        setMainFrame();
++    }
+ 
++    /////////////       Graphics        /////////////
++
++    public void paint(Graphics g) {
++        super.paintComponents(g);
++    }
++
++    private void setMainFrame() {
++        setTitle("Sort Visualization");
+         //window location's just for current device
+         setLocation(150, 80);
+         setSize(WIDTH, HEIGHT);
+         setResizable(false);
+         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+         setVisible(true);
+-
+-
+-        start();
+-    }
+-
+-    /////////////       Thread        /////////////
+-
+-    public void start() {
+-        thread = new Thread(this);
+-        thread.start();
+-        running = true;
+-    }
+-    public void stop() {
+-        try {
+-            thread.join();
+-        } catch (InterruptedException ex) {
+-            ex.fillInStackTrace();
+-            System.out.println("Thread.join error");
+-        }
+-    }
+-    public void tick() {
+-        if(ticks > 5) {
+-
+-            ticks = 0;
+-        }
+-        ticks++;
+-    }
+-    @Override
+-    public void run() {
+-        while(running) {
+-            tick();
+-            repaint();
+-            try {
+-                thread.sleep(1000/20);
+-            } catch (InterruptedException ex) {
+-                ex.fillInStackTrace();
+-                System.out.println("Thread.sleep error");
+-            }
+-        }
+-    }
+-
+-    /////////////       Graphics        /////////////
+-
+-    public void paint(Graphics g) {
+-        formPanel.draw(g);
+-        toolBar.draw(g);
+     }
+ }
+\ No newline at end of file
+Index: src/Components/OnOffButton.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/Components/OnOffButton.java	(date 1582296763237)
++++ src/Components/OnOffButton.java	(date 1582296763237)
+@@ -0,0 +1,89 @@
++package Components;
++
++import javax.swing.*;
++import java.awt.*;
++import java.awt.event.MouseEvent;
++import java.awt.event.MouseListener;
++
++public class OnOffButton extends JButton implements MouseListener {
++    private int width = 210, height = 70;
++    private String text;
++    private boolean hover = false, pressed = false;
++    private Color color = new Color(242,108,74),
++            hoverColor = new Color (192,66,33),
++            pressedColor = new Color (49,183,83);
++
++    public OnOffButton(String text) {
++        this.text = text;
++
++        addMouseListener(this);
++        setAlgorithmButton();
++    }
++    private void setAlgorithmButton() {
++        Dimension dim = new Dimension(width,height);
++        setPreferredSize(dim);
++        setMaximumSize(dim);
++        setMinimumSize(dim);
++        setOpaque(true);
++        setVisible(true);
++        setFocusable(true);
++        setBorderPainted(false);
++        setContentAreaFilled(false);
++    }
++    @Override
++    public void paintComponent(Graphics g) {
++        super.paintComponent(g);
++        //// Background ////
++        if(pressed) {
++            g.setColor(pressedColor);
++            g.fillRect(0,0,width,height);
++        } else {
++            if (hover) {
++                g.setColor(hoverColor);
++                g.fillRect(0, 0, width, height);
++            } else {
++                g.setColor(color);
++                g.fillRect(0, 0, width, height);
++            }
++        }
++
++        ///// Border ////
++        int borderWidth = 5;
++        g.setColor(Color.black);
++        g.fillRect(0,0, width, borderWidth);
++        g.fillRect(0,height - borderWidth, width, height);
++        g.fillRect(0, 0, borderWidth, height);
++        g.fillRect(width - borderWidth, 0, width, height);
++
++        //// Text ////
++        g.setColor(Color.black);
++        g.setFont(Font.decode("arial-BOLD-26"));
++        FontMetrics fontMetrics = g.getFontMetrics();
++        int textWidth = fontMetrics.stringWidth(text);
++        g.drawString(text, width/2 - textWidth/2,height/2+7);
++    }
++    @Override
++    public void mouseClicked(MouseEvent mouseEvent){
++
++    }
++
++    @Override
++    public void mousePressed(MouseEvent mouseEvent) {
++        pressed = true;
++    }
++
++    @Override
++    public void mouseReleased(MouseEvent mouseEvent) {
++        pressed = false;
++    }
++
++    @Override
++    public void mouseEntered(MouseEvent mouseEvent) {
++        hover = true;
++    }
++
++    @Override
++    public void mouseExited(MouseEvent mouseEvent) {
++        hover = false;
++    }
++}
+Index: src/Core/AlgorithmPanel.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/Core/AlgorithmPanel.java	(date 1582305219901)
++++ src/Core/AlgorithmPanel.java	(date 1582305219901)
+@@ -0,0 +1,91 @@
++package Core;
++
++import Components.AlgorithmButton;
++import Components.NumberListener;
++import Components.TextLabel;
++
++import javax.swing.*;
++import java.awt.*;
++import java.awt.event.ActionEvent;
++import java.awt.event.ActionListener;
++import java.util.ArrayList;
++import java.util.List;
++
++public class AlgorithmPanel extends JPanel implements ActionListener {
++    private int width, height;
++    private Color bgColor;
++
++    private List<AlgorithmButton> buttons;
++
++    private NumberListener numberListener;
++
++    public AlgorithmPanel(int width, int height, Color bgColor) {
++        this.width = width;
++        this.height = height;
++        this.bgColor = bgColor;
++
++        JPanel layout = new JPanel();
++        layout.setBackground(bgColor);
++        layout.setLayout(new GridLayout(8,1,10,20));
++
++        TextLabel title = new TextLabel("Algorithms:",24,bgColor);
++        title.setPreferredSize(new Dimension(150,40));
++
++        //Creating buttons and setting index of every button
++        buttons = new ArrayList<>();
++        for (int i = 0; i < 8; i++)
++            buttons.add(new AlgorithmButton(i));
++
++        buttons.get(0).setText("Bubble Sort");
++        buttons.get(1).setText("Bubble Sort");
++        buttons.get(2).setText("Bubble Sort");
++        buttons.get(3).setText("Bubble Sort");
++        buttons.get(4).setText("Bubble Sort");
++        buttons.get(5).setText("Bubble Sort");
++        buttons.get(6).setText("Bubble Sort");
++        buttons.get(7).setText("Bubble Sort");
++
++        //Adding action listener and to layout
++        for (AlgorithmButton button : buttons) {
++            button.addActionListener(this);
++            layout.add(button);
++        }
++
++        add(title, BorderLayout.NORTH);
++        add(layout,BorderLayout.CENTER);
++        setAlgorithmPanel();
++    }
++    private void setAlgorithmPanel() {
++        Dimension dim = new Dimension(width,height);
++        setOpaque(true);
++        setPreferredSize(dim);
++        setMaximumSize(dim);
++        setMinimumSize(dim);
++        setBackground(bgColor);
++    }
++    public void setNumberListener(NumberListener listener) {
++        this.numberListener = listener;
++    }
++
++    @Override
++    public void actionPerformed(ActionEvent e) {
++        AlgorithmButton clicked = (AlgorithmButton) e.getSource();
++        for (AlgorithmButton button : buttons) {
++            if (clicked != button)  {
++                if(button.getClicked()) {
++                    button.setClicked(false);
++                    //button.paintComponent(g);
++                }
++            }
++        }
++
++        //send number of clicked button to sort panel, ONLY when it hasn't been clicked before
++        if(numberListener !=null) {
++            for (AlgorithmButton button : buttons) {
++                if (clicked == button && !button.getClicked())
++                    numberListener.numberEmitted(button.getIndex());
++                if (clicked != button) button.setClicked(false);
++            }
++        }
++    }
++}
+\ No newline at end of file
+Index: src/SortComponents/Column.java
+===================================================================
+--- src/SortComponents/Column.java	(revision eff1dd95d18a010e83968b6d0f789a8e2f9ec8c1)
++++ src/Components/Column.java	(date 1582020866323)
+@@ -1,34 +1,24 @@
+-package SortComponents;
++package Components;
+ 
+ import java.awt.*;
+-import java.util.ArrayList;
+-import java.util.List;
+ 
+ public class Column {
+     private final int yStartPosition = 800;
+-    private int x;
+-    private int height;
+-    private int brickWidth;
+-    private int brickHeight;
+-    private int size;
++    private final int xStartPosition = 20;
++    private int width, height;
+     private int index;
+     private Color color;
+ 
+-    public Column(int index, int x, int height, int brickWidth, int brickHeight, Color color) {
++    public Column(int index, int width, int height, Color color) {
+         this.index = index;
+-        this.x = x;
++        this.width = width;
+         this.height = height;
+-        this.brickWidth = brickWidth;
+-        this.brickHeight = brickHeight;
+-        this.size = height/brickHeight;
+         this.color = color;
+ 
+     }
+-    public void drawColumn(Graphics g) {
++    public void draw(Graphics g) {
+         g.setColor(color);
+-        for (int i = 0; i < height/brickHeight; i++) {
+-            g.fillRect(x, yStartPosition - (i * brickHeight), brickWidth, brickHeight);
+-        }
++        g.fillRect(xStartPosition, yStartPosition, width, height);
+     }
+     public int getHeight() {
+         return height;
+Index: src/Core/TopPanel.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/Core/TopPanel.java	(date 1582300266323)
++++ src/Core/TopPanel.java	(date 1582300266323)
+@@ -0,0 +1,106 @@
++package Core;
++
++import Components.*;
++
++import javax.swing.*;
++import javax.swing.event.ChangeEvent;
++import javax.swing.event.ChangeListener;
++import java.awt.*;
++import java.awt.event.ActionEvent;
++import java.awt.event.ActionListener;
++
++public class TopPanel extends JPanel implements ActionListener, ChangeListener {
++    private int width, height;
++    private Color bgColor;
++    private OnOffButton startButton, stopButton, resetButton;
++    private Slider sizeSlider, speedSlider;
++    private NumberListener  buttonsListener,
++                            sizeListener,
++                            speedListener;
++
++    public TopPanel(int width, int height, Color bgColor) {
++        this.width = width;
++        this.height = height;
++        this.bgColor = bgColor;
++
++        setLayout(new FlowLayout(2,20,10));
++
++        // label size,speed
++        int fontSize = 16;
++        TextLabel sizeText = new TextLabel("size: ", fontSize, bgColor);
++        TextLabel speedText = new TextLabel("speed: ", fontSize, bgColor);
++
++        // creating sliders and adding Change listener
++        speedSlider = new Slider(bgColor);
++        sizeSlider = new Slider(bgColor);
++        sizeSlider.addChangeListener(this);
++        speedSlider.addChangeListener(this);
++
++        // creating buttons and adding Action listener
++        startButton = new OnOffButton("START");
++        stopButton = new OnOffButton("STOP");
++        resetButton = new OnOffButton("RESET");
++        startButton.addActionListener(this);
++        stopButton.addActionListener(this);
++        resetButton.addActionListener(this);
++
++
++        // adding components
++        add(sizeText);
++        add(sizeSlider);
++        add(speedText);
++        add(speedSlider);
++        add(resetButton);
++        add(stopButton);
++        add(startButton);
++
++        setTopPanel();
++    }
++    private void setTopPanel() {
++        Dimension dim = new Dimension(width,height);
++        setOpaque(true);
++        setPreferredSize(dim);
++        setMaximumSize(dim);
++        setMinimumSize(dim);
++        setBackground(bgColor);
++    }
++    public void setButtonListener(NumberListener listener) {
++        this.buttonsListener = listener;
++    }
++    public void setSizeListener(NumberListener listener) {
++        this.sizeListener = listener;
++    }
++    public void setSpeedListener(NumberListener listener) {
++        this.speedListener = listener;
++    }
++
++    @Override
++    public void actionPerformed(ActionEvent e) {
++        OnOffButton clicked = (OnOffButton) e.getSource();
++        if(buttonsListener != null) {
++            if(clicked == startButton) {
++                buttonsListener.numberEmitted(1);
++            } else if(clicked == stopButton) {
++                buttonsListener.numberEmitted(2);
++            } else if(clicked == resetButton) {
++                buttonsListener.numberEmitted(3);
++            }
++        }
++    }
++
++    @Override
++    public void stateChanged(ChangeEvent e) {
++        Slider slider = (Slider)e.getSource();
++        if (slider == sizeSlider) {
++            if (sizeListener != null) {
++                sizeListener.numberEmitted(sizeSlider.getValue());
++            }
++        } else if(slider == speedSlider) {
++            if (sizeListener != null) {
++                speedListener.numberEmitted(speedSlider.getValue());
++            }
++        }
++
++
++    }
++}
+Index: src/Components/Slider.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/Components/Slider.java	(date 1582300350211)
++++ src/Components/Slider.java	(date 1582300350211)
+@@ -0,0 +1,22 @@
++package Components;
++
++import javax.swing.*;
++import java.awt.*;
++
++public class Slider extends JSlider {
++    private Color bgColor;
++
++    public Slider(Color bgColor) {
++        this.bgColor = bgColor;
++        setOrientation(HORIZONTAL);
++        setMinimum(1);
++        setMaximum(5);
++        setValue(3);
++        setBackground(bgColor);
++        setPaintLabels(true);
++        setPaintTicks(true);
++        setSnapToTicks(true);
++        setMajorTickSpacing(1);
++        setMinorTickSpacing(1);
++    }
++}
+Index: src/Components/TextLabel.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/Components/TextLabel.java	(date 1582276520357)
++++ src/Components/TextLabel.java	(date 1582276520357)
+@@ -0,0 +1,22 @@
++package Components;
++
++import javax.swing.*;
++import java.awt.*;
++
++public class TextLabel extends JLabel {
++    private int fontSize;
++    private String text;
++    private Color bgColor;
++
++    public TextLabel(String text, int fontSize, Color bgColor) {
++        this.fontSize = fontSize;
++        this.text = text;
++        this.bgColor = bgColor;
++
++        String font = "arial-BOLD-" + fontSize;
++        setFont(Font.decode(font));
++        setText(text);
++        setBackground(bgColor);
++        setOpaque(true);
++    }
++}
+Index: src/Sort/SortPanel.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/Sort/SortPanel.java	(revision eff1dd95d18a010e83968b6d0f789a8e2f9ec8c1)
++++ src/Sort/SortPanel.java	(date 1582300266338)
+@@ -1,67 +1,61 @@
+ package Sort;
+ 
+-import Core.MainPanel;
+-import SortComponents.Column;
++import Components.Column;
+ 
++import javax.swing.*;
+ import java.awt.*;
+ import java.util.ArrayList;
+ import java.util.List;
+-import java.util.Random;
+ 
+-public class SortPanel {
+-    private Random r = new Random();
+-    static List<Column> columns;
++public class SortPanel extends JPanel {
+ 
+-    private Color columnColor = Color.blue;
+-
+-    private int size;
+-    private int brickWidth, brickHeight;
+-    private int sleepTime;
++    private int width, height;
++    private Color bgColor;
+     private int numOfAlgorithm;
+-    private int columnsMaxWidth,columnsMaxHeight;
++    private boolean on = false;
++    private int size, speed;
+ 
+-    public SortPanel(int brickWidth, int brickHeight, int sleepTime, int numOfAlgorithm, int columnsMaxWidth, int columnsMaxHeight) {
+-        this.brickWidth = brickWidth;
+-        this.brickHeight = brickHeight;
+-        this.sleepTime = sleepTime;
+-        this.numOfAlgorithm = numOfAlgorithm;
+-        this.columnsMaxWidth = columnsMaxWidth;
+-        this.columnsMaxHeight = columnsMaxHeight;
++    static List<Column> columns;
++
++    public SortPanel(int width, int height, Color bgColor) {
++        this.width = width;
++        this.height = height;
++        this.bgColor = bgColor;
+ 
+         columns = new ArrayList<>();
+-        createColumns();
+-        //shuffle();
+ 
++       setSortPanel();
+     }
+-    public void draw(Graphics g) {
+-        for (Column column : columns)
+-            column.drawColumn(g);
++    private void setSortPanel() {
++        Dimension dim = new Dimension(width,height);
++        setOpaque(true);
++        setPreferredSize(dim);
++        setMaximumSize(dim);
++        setMinimumSize(dim);
++        setBackground(bgColor);
+     }
+-    public void selectAlgorithm() {
+-        switch (numOfAlgorithm) {
+-            case 1: new BubbleSort();
+-            break;
+-        }
++    public void setNumOfAlgorithm(int num) {
++        this.numOfAlgorithm = num;
++    }
++
++    public void setSize(int size) {
++        this.size = size;
++        System.out.println("Size: " + size);
+     }
+-    public void createColumns() {
+-        //draw Columns
+-        size = (columnsMaxWidth / brickWidth);
+-        System.out.println(size);
+-        brickHeight = columnsMaxHeight / size;
+-        int space = 10; //(MainFrame.WIDTH - fieldMaxWidth - 160)/2; try to center automatically
+ 
+-        for (int i = 0; i < size; i++)
+-            columns.add(new Column(i, (space + (i * brickWidth)), (i * brickHeight), brickWidth, brickHeight, columnColor));
+-
+-        //help sout
+-        System.out.println("size " + size);
+-        System.out.println("width: " + brickWidth);
+-        System.out.println("height: " + brickHeight);
+-        System.out.println("space: " + space);
++    public void setSpeed(int speed) {
++        this.speed = speed;
++        System.out.println("Speed: " + speed);
++    }
++    public void startOn() {
++        on = true;
++        System.out.println("START ON");
+     }
+-    public void shuffle() {
+-        for (int i = 0; i < size ; i++) {
+-            columns.get(i).setHeight(r.nextInt(size));
+-        }
++    public void startOff() {
++        on = false;
++        System.out.println("START OFF");
++    }
++    public void reset() {
++        System.out.println("RESET");
+     }
+ }
+Index: src/Components/AlgorithmButton.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/Components/AlgorithmButton.java	(date 1582301288229)
++++ src/Components/AlgorithmButton.java	(date 1582301288229)
+@@ -0,0 +1,107 @@
++package Components;
++
++import javax.swing.*;
++import java.awt.*;
++import java.awt.event.MouseEvent;
++import java.awt.event.MouseListener;
++
++public class AlgorithmButton extends JButton implements MouseListener {
++    private int width = 200, height = 50;
++    private String text = "empty";
++    private int index;
++    private Dimension dim;
++    private boolean hover = false, clicked = false;
++    private Color color = new Color(242,108,74),
++            hoverColor = new Color (192,66,33),
++            clickedColor = new Color (49,183,83),
++            clickedHoverColor = new Color (30,120,50);
++
++    public AlgorithmButton(int index) {
++        this.index = index;
++        addMouseListener(this);
++        setAlgorithmButton();
++    }
++    private void setAlgorithmButton() {
++        Dimension dim = new Dimension(width,height);
++        setPreferredSize(dim);
++        setMaximumSize(dim);
++        setMinimumSize(dim);
++        setOpaque(true);
++        setVisible(true);
++        setFocusable(true);
++        setBorderPainted(false);
++        setContentAreaFilled(false);
++    }
++    @Override
++    public void paintComponent(Graphics g) {
++        super.paintComponent(g);
++        //// Background ////
++        if(clicked) {
++            if (hover) {
++                g.setColor(clickedHoverColor);
++                g.fillRect(0,0,width,height);
++            } else
++            g.setColor(clickedColor);
++            g.fillRect(0,0,width,height);
++        } else {
++            if (hover) {
++                g.setColor(hoverColor);
++                g.fillRect(0, 0, width, height);
++            } else {
++                g.setColor(color);
++                g.fillRect(0, 0, width, height);
++            }
++        }
++
++        ///// Border ////
++        int borderWidth = 5;
++        g.setColor(Color.black);
++        g.fillRect(0,0, width, borderWidth);
++        g.fillRect(0,height - borderWidth, width, height);
++        g.fillRect(0, 0, borderWidth, height);
++        g.fillRect(width - borderWidth, 0, width, height);
++
++        //// Text ////
++        g.setColor(Color.black);
++        g.setFont(Font.decode("arial-BOLD-24"));
++        FontMetrics fontMetrics = g.getFontMetrics();
++        int textWidth = fontMetrics.stringWidth(text);
++        g.drawString(text, width/2 - textWidth/2,height/2+7);
++    }
++    @Override
++    public void mouseClicked(MouseEvent mouseEvent) {
++        clicked = !clicked;
++    }
++
++    @Override
++    public void mousePressed(MouseEvent mouseEvent) {
++
++    }
++
++    @Override
++    public void mouseReleased(MouseEvent mouseEvent) {
++
++    }
++
++    @Override
++    public void mouseEntered(MouseEvent mouseEvent) {
++        hover = true;
++    }
++
++    @Override
++    public void mouseExited(MouseEvent mouseEvent) {
++        hover = false;
++    }
++    public boolean getClicked() {
++        return clicked;
++    }
++    public void setText(String text) {
++        this.text = text;
++    }
++    public int getIndex() {
++        return index;
++    }
++    public void setClicked(boolean clicked) {
++        this.clicked = clicked;
++    }
++}
+Index: src/Components/NumberListener.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/Components/NumberListener.java	(date 1582277320335)
++++ src/Components/NumberListener.java	(date 1582277320335)
+@@ -0,0 +1,5 @@
++package Components;
++
++public interface NumberListener {
++    void numberEmitted(int number);
++}
