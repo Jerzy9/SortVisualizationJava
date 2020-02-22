@@ -9,7 +9,6 @@ public class AlgorithmButton extends JButton implements MouseListener {
     private int width = 200, height = 50;
     private String text = "empty";
     private int index;
-    private Dimension dim;
     private boolean hover = false, clicked = false;
     private Color color = new Color(242,108,74),
             hoverColor = new Color (192,66,33),
