@@ -48,12 +48,12 @@ public class OnOffButton extends JButton implements MouseListener {
         }
 
         ///// Border ////
-        int borderWidth = 5;
+        int border = 5;
         g.setColor(Color.black);
-        g.fillRect(0,0, width, borderWidth);
-        g.fillRect(0,height - borderWidth, width, height);
-        g.fillRect(0, 0, borderWidth, height);
-        g.fillRect(width - borderWidth, 0, width, height);
+        g.fillRect(0,0, width, border);
+        g.fillRect(0,height - border, width, border);
+        g.fillRect(0, 0, border, height);
+        g.fillRect(width - border, 0, border, height);
 
         //// Text ////
         g.setColor(Color.black);

@@ -1,16 +1,14 @@
 package Core;
 
+import Components.FloatListener;
 import Components.NumberListener;
 import Sort.SortPanel;
 
 import javax.swing.*;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 
 public class MainFrame extends JFrame{
     private int WIDTH = 1600, HEIGHT = 900;
-
-    Color c2 = new Color(160,233,210);
 
     private Container mainContainer;
 
@@ -24,13 +22,13 @@ public class MainFrame extends JFrame{
     private int sortPanelWidth = WIDTH - 300,
                 sortPanelHeight = HEIGHT - topPanelHeight;
 
-    private AlgorithmPanel algorithmPanel;
+    private AlgoPanel algoPanel;
     private int sidePanelWidth = 300,
                 sidePanelHeight = HEIGHT - 250;
 
     private StatsPanel statsPanel;
     private int statsPanelWidth = 300,
-                statsPanelHeight = 250;
+                statsPanelHeight = 211; // real height
 
     /////////////       MainFrame Constructor       /////////////
 
@@ -39,54 +37,83 @@ public class MainFrame extends JFrame{
         mainContainer = this.getContentPane();
         mainContainer.setLayout(new BorderLayout(8,6));
         mainContainer.setBackground(Color.black);
-        //this.getRootPane().setBorder(BorderFactory.createMatteBorder(4,4,4,4,Color.black));     //border na około wszystkiego
 
         ///// MIDDLE CONTAINER /////
         Container middleContainer = new Container();
         middleContainer.setLayout(new BoxLayout(middleContainer, BoxLayout.Y_AXIS));
 
-        // Top Panel
         topPanel = new TopPanel(topPanelWidth, topPanelHeight, bgColor);
-        topPanel.setBorder(new LineBorder(Color.black,4));
+        sortPanel = new SortPanel(sortPanelWidth, sortPanelHeight, bgColor);
+        algoPanel = new AlgoPanel(sidePanelWidth, sidePanelHeight, bgColor);
+        statsPanel = new StatsPanel(statsPanelWidth, statsPanelHeight, bgColor);
 
+        // Top Panel
+        // All three buttons in TopPanel, Start, Stop and Reset
         topPanel.setButtonListener(new NumberListener() {
             @Override
             public void numberEmitted(int number) {
                 if(number == 1) {
-                    sortPanel.startOn();
+                    sortPanel.startButton();        // START
                 } else if (number == 2) {
-                    sortPanel.startOff();
+                    sortPanel.stopButton();       // STOP
                 } else if (number == 3) {
-                    sortPanel.reset();
+                    sortPanel.resetButton();          // RESET
                 }
             }
         });
-        topPanel.setSizeListener(new NumberListener() {
+        // size slider
+        topPanel.setColumnsWidthListener(new NumberListener() {
             @Override
             public void numberEmitted(int number) {
-                sortPanel.setSize(number);
+                if(sortPanel.getColumnsWidth() != number) sortPanel.setColumnsWidth(number);
             }
         });
+        // speed slider
         topPanel.setSpeedListener(new NumberListener() {
             @Override
             public void numberEmitted(int number) {
-                sortPanel.setSpeed(number);
+                if(sortPanel.getSortSpeed() != number) sortPanel.setSortSpeed(number);
             }
         });
 
         // Sort Panel
-        sortPanel = new SortPanel(sortPanelWidth, sortPanelHeight, bgColor);
-        sortPanel.setBorder(new LineBorder(Color.black, 4));
+        sortPanel.setElementsListener(new NumberListener() {
+            @Override
+            public void numberEmitted(int number) {
+                statsPanel.setElements(number);
+            }
+        });
+        sortPanel.setComparisonsListener(new NumberListener() {
+            @Override
+            public void numberEmitted(int number) {
+                statsPanel.setComparisons(number);
+            }
+        });
+        sortPanel.setConversionsListener(new NumberListener() {
+            @Override
+            public void numberEmitted(int number) {
+                statsPanel.setConversions(number);
+            }
+        });
+        sortPanel.setTimeListener(new FloatListener() {
+            @Override
+            public void floatEmitted(float number) {
+                statsPanel.setTime(number);
+            }
+        });
+        sortPanel.setDelayListener(new FloatListener() {
+            @Override
+            public void floatEmitted(float number) {
+                statsPanel.setDelay(number);
+            }
+        });
 
         ///// SIDE CONTAINER /////
         Container sideContainer = new Container();
         sideContainer.setLayout(new BoxLayout(sideContainer, BoxLayout.Y_AXIS));
 
         //Algorithm Panel
-        algorithmPanel = new AlgorithmPanel(sidePanelWidth, sidePanelHeight, bgColor);
-        algorithmPanel.setBorder(new LineBorder(Color.black, 4));
-
-        algorithmPanel.setNumberListener(new NumberListener() {
+        algoPanel.setNumberListener(new NumberListener() {
             @Override
             public void numberEmitted(int number) {
                 sortPanel.setNumOfAlgorithm(number);
@@ -94,14 +121,12 @@ public class MainFrame extends JFrame{
         });
 
         //Stats Panel
-        statsPanel = new StatsPanel(statsPanelWidth, statsPanelHeight, bgColor);
-        statsPanel.setBorder(new LineBorder(Color.black, 4));
 
         ///// Adding Components /////
         middleContainer.add(topPanel);
         middleContainer.add(sortPanel);
 
-        sideContainer.add(algorithmPanel);
+        sideContainer.add(algoPanel);
         sideContainer.add(statsPanel);
 
         mainContainer.add(middleContainer, BorderLayout.EAST);
@@ -110,18 +135,13 @@ public class MainFrame extends JFrame{
         setMainFrame();
     }
 
-    /////////////       Graphics        /////////////
-
-    public void paint(Graphics g) {
-        super.paintComponents(g);
-    }
-
     private void setMainFrame() {
         setTitle("Sort Visualization");
         //window location's just for current device
         setLocation(150, 80);
         setSize(WIDTH, HEIGHT);
         setResizable(false);
+        setFocusable(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
     }

@@ -5,13 +5,14 @@ import Components.NumberListener;
 import Components.TextLabel;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AlgorithmPanel extends JPanel implements ActionListener {
+public class AlgoPanel extends JPanel implements ActionListener {
     private int width, height;
     private Color bgColor;
 
@@ -19,7 +20,7 @@ public class AlgorithmPanel extends JPanel implements ActionListener {
 
     private NumberListener numberListener;
 
-    public AlgorithmPanel(int width, int height, Color bgColor) {
+    public AlgoPanel(int width, int height, Color bgColor) {
         this.width = width;
         this.height = height;
         this.bgColor = bgColor;
@@ -28,7 +29,7 @@ public class AlgorithmPanel extends JPanel implements ActionListener {
         layout.setBackground(bgColor);
         layout.setLayout(new GridLayout(8,1,10,20));
 
-        TextLabel title = new TextLabel("Algorithms:",24,bgColor);
+        TextLabel title = new TextLabel("Algorithm:",24,bgColor);
         title.setPreferredSize(new Dimension(150,40));
 
         //Creating buttons and setting index of every button
@@ -62,6 +63,7 @@ public class AlgorithmPanel extends JPanel implements ActionListener {
         setMaximumSize(dim);
         setMinimumSize(dim);
         setBackground(bgColor);
+        setBorder(new LineBorder(Color.black, 4));
     }
     public void setNumberListener(NumberListener listener) {
         this.numberListener = listener;

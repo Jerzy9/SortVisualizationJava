@@ -3,22 +3,21 @@ package Components;
 import java.awt.*;
 
 public class Column {
-    private final int yStartPosition = 800;
-    private final int xStartPosition = 20;
-    private int width, height;
+    private final int yStartPosition = 731;
+    private final int xStartPosition = 30;
+    private int width, height, x;
     private int index;
-    private Color color;
+    private Color color = Color.pink;
 
-    public Column(int index, int width, int height, Color color) {
+    public Column(int index, int x,int width, int height) {
         this.index = index;
+        this.x =x;
         this.width = width;
         this.height = height;
-        this.color = color;
-
     }
     public void draw(Graphics g) {
         g.setColor(color);
-        g.fillRect(xStartPosition, yStartPosition, width, height);
+        g.fillRect(xStartPosition+x, yStartPosition-height, width, height);
     }
     public int getHeight() {
         return height;

@@ -3,6 +3,7 @@ package Core;
 import Components.*;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
@@ -23,7 +24,7 @@ public class TopPanel extends JPanel implements ActionListener, ChangeListener {
         this.height = height;
         this.bgColor = bgColor;
 
-        setLayout(new FlowLayout(2,20,10));
+        setLayout(new FlowLayout(FlowLayout.RIGHT,20,10));
 
         // label size,speed
         int fontSize = 16;
@@ -31,8 +32,8 @@ public class TopPanel extends JPanel implements ActionListener, ChangeListener {
         TextLabel speedText = new TextLabel("speed: ", fontSize, bgColor);
 
         // creating sliders and adding Change listener
-        speedSlider = new Slider(bgColor);
-        sizeSlider = new Slider(bgColor);
+        speedSlider = new Slider(bgColor,7,1,6);
+        sizeSlider = new Slider(bgColor,7,1,2);
         sizeSlider.addChangeListener(this);
         speedSlider.addChangeListener(this);
 
@@ -43,7 +44,6 @@ public class TopPanel extends JPanel implements ActionListener, ChangeListener {
         startButton.addActionListener(this);
         stopButton.addActionListener(this);
         resetButton.addActionListener(this);
-
 
         // adding components
         add(sizeText);
@@ -63,11 +63,12 @@ public class TopPanel extends JPanel implements ActionListener, ChangeListener {
         setMaximumSize(dim);
         setMinimumSize(dim);
         setBackground(bgColor);
+        setBorder(new LineBorder(Color.black,4));
     }
     public void setButtonListener(NumberListener listener) {
         this.buttonsListener = listener;
     }
-    public void setSizeListener(NumberListener listener) {
+    public void setColumnsWidthListener(NumberListener listener) {
         this.sizeListener = listener;
     }
     public void setSpeedListener(NumberListener listener) {
@@ -100,7 +101,5 @@ public class TopPanel extends JPanel implements ActionListener, ChangeListener {
                 speedListener.numberEmitted(speedSlider.getValue());
             }
         }
-
-
     }
 }
