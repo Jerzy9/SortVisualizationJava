@@ -1,9 +1,8 @@
-package Core;
+package core.panels;
 
-import Components.TextLabel;
+import components.TextLabel;
 
 import javax.swing.*;
-import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
 import java.awt.*;
 
@@ -16,7 +15,7 @@ public class StatsPanel extends JPanel {
     private TextLabel   elementsLabel, comparisionLabel, conversionsLabel, timeLabel, delayLabel,
                         elementsNumberLabel, comparisionNumberLabel, conversionsNumberLabel, timeNumberLabel, delayNumberLabel;
 
-    StatsPanel(int width, int height, Color bgColor) {
+    public StatsPanel(int width, int height, Color bgColor) {
         this.width = width;
         this.height = height;
         this.bgColor = bgColor;
@@ -65,8 +64,8 @@ public class StatsPanel extends JPanel {
         elementsNumberLabel = new TextLabel("" + elements, fontSize, bgColor);
         comparisionNumberLabel   = new TextLabel("" + comparisons, fontSize, bgColor);
         conversionsNumberLabel = new TextLabel("" + conversions, fontSize, bgColor);
-        timeNumberLabel = new TextLabel("" + time, fontSize, bgColor);
-        delayNumberLabel = new TextLabel("" + delay, fontSize, bgColor);
+        timeNumberLabel = new TextLabel("" + time + " s", fontSize, bgColor);
+        delayNumberLabel = new TextLabel("" + delay + " ms", fontSize, bgColor);
 
         // add all text to layout
         textLayout.add(elementsLabel);
@@ -117,7 +116,7 @@ public class StatsPanel extends JPanel {
     }
     public void setTime(float time) {
         this.time = time;
-        timeNumberLabel.setText("" + time);
+        timeNumberLabel.setText("" + time +" s");
     }
     public void setDelay(float delay) {
         this.delay = delay;

@@ -1,8 +1,11 @@
-package Core;
+package core;
 
-import Components.FloatListener;
-import Components.NumberListener;
-import Sort.SortPanel;
+import components.listeners.FloatListener;
+import components.listeners.NumberListener;
+import core.panels.AlgoPanel;
+import core.panels.StatsPanel;
+import core.panels.TopPanel;
+import sorting.SortPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,7 +35,7 @@ public class MainFrame extends JFrame{
 
     /////////////       MainFrame Constructor       /////////////
 
-    public MainFrame() {
+    MainFrame() {
         ///// MAIN CONTAINER /////
         mainContainer = this.getContentPane();
         mainContainer.setLayout(new BorderLayout(8,6));

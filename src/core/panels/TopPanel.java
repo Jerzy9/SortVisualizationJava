@@ -1,6 +1,8 @@
-package Core;
+package core.panels;
 
-import Components.*;
+import components.*;
+import components.buttons.OnOffButton;
+import components.listeners.NumberListener;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -15,7 +17,7 @@ public class TopPanel extends JPanel implements ActionListener, ChangeListener {
     private Color bgColor;
     private OnOffButton startButton, stopButton, resetButton;
     private Slider sizeSlider, speedSlider;
-    private NumberListener  buttonsListener,
+    private NumberListener buttonsListener,
                             sizeListener,
                             speedListener;
 

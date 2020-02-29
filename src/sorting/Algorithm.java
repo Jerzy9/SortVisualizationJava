@@ -1,6 +1,6 @@
-package Sort;
+package sorting;
 
-import Components.Column;
+import components.Column;
 
 import java.util.List;
 

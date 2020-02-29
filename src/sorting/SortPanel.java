@@ -1,8 +1,9 @@
-package Sort;
+package sorting;
 
-import Components.Column;
-import Components.FloatListener;
-import Components.NumberListener;
+import components.Column;
+import components.listeners.FloatListener;
+import components.listeners.NumberListener;
+import components.SimpleTimer;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -16,8 +17,8 @@ public class SortPanel extends JPanel implements Runnable{
     private int width, height;
     private Color bgColor;
     private int numOfAlgorithm;
-    private static boolean runningSortThread = false, resetSortThread = false;      // sort thread
-    private boolean running = false;                      // this thread
+    private static boolean runningSortThread = false, resetSortThread = false;      // sort thread in Algorithm
+    private boolean running = false;                                                // this thread
     private int columnsWidth = 2, sortSpeed;
 
     private static List<Column> columns;
@@ -31,6 +32,8 @@ public class SortPanel extends JPanel implements Runnable{
     private FloatListener   delayListener,
                             timeListener;
 
+    private SimpleTimer timer;
+
     public SortPanel(int width, int height, Color bgColor) {
         this.width = width;
         this.height = height;
@@ -41,6 +44,8 @@ public class SortPanel extends JPanel implements Runnable{
        setSortPanel();
        start();
        createColumns();
+       timer = new SimpleTimer();
+
     }
     private void setSortPanel() {
         Dimension dim = new Dimension(width,height);
@@ -70,19 +75,22 @@ public class SortPanel extends JPanel implements Runnable{
     public void startButton() {
         // it sets sortThread and start it
         runningSortThread = true;
+        timer.returnTicking();              // it's running
         if(currentAlgorithm == null) {
-            setSpeedAlgoAndStats();
+            setSpeedAlgoAndStats();         // take variables like brickWidth, speed, algorithm and create currentAlgorithm and start it
         }
     }
     public void stopButton() {
-        runningSortThread = false;
+        runningSortThread = false;          // stop sorting
+        timer.stop();                       // timer Thread sleep
     }
     public void resetButton() {
         // it creates new Columns and clears currentAlgorithm
         if(!runningSortThread) {
-            resetSortThread = true;         //it join() sortThread
-            currentAlgorithm = null;
-            createColumns();
+            resetSortThread = true;         // it join() sortThread
+            currentAlgorithm = null;        // it clears currentAlgorithm variable
+            createColumns();                // creates new Columns with different variables, like brickWidth, speed, algorithm
+            timer.reset();                  // it clears time variable
         }
     }
 
@@ -146,11 +154,12 @@ public class SortPanel extends JPanel implements Runnable{
             if(currentAlgorithm != null) {
                 comparisonsListener.numberEmitted(currentAlgorithm.getComparisons());
                 conversionsListener.numberEmitted(currentAlgorithm.getConversions());
+                timeListener.floatEmitted(timer.getTime());
             }
         }
     }
     private void createColumns() {
-        //picking size
+        // picking size
         int brickLength = 0;
         switch (columnsWidth) {
             case 1: brickLength = 1;
@@ -168,11 +177,11 @@ public class SortPanel extends JPanel implements Runnable{
             case 7: brickLength = 40;
                 break;
         }
-        //creating random height of each column
+        // creating random height of each column
         Random r = new Random();
         columns.clear();
         for (int i = 0; i < 1240/brickLength; i ++) {
-            //always higher than 0 px
+            // always higher than 0 px
             int randomHeight = r.nextInt(700/brickLength)+1;
             columns.add(new Column(i,i*brickLength, brickLength,randomHeight*brickLength));
         }
@@ -216,24 +225,24 @@ public class SortPanel extends JPanel implements Runnable{
                 break;
         }
 
-        //Stats Panel elements:
+        // Stats Panel elements:
+        // elements
         elementsListener.numberEmitted(columns.size());
-        float delay = (float) sleepTime/moduloSleep;
-        delayListener.floatEmitted(delay);
 
+        // delay
+        float delay = (float) sleepTime/moduloSleep;
+        delay = (float) Math.round(delay * 100) / 100;
+        delayListener.floatEmitted(delay);
     }
     public static boolean isRunningSortThread() {
         return runningSortThread;
     }
-
     public static void setRunningSortThread(boolean runningSortThread) {
         SortPanel.runningSortThread = runningSortThread;
     }
-
     public static boolean isResetSortThread() {
         return resetSortThread;
     }
-
     public static void setResetSortThread(boolean resetSortThread) {
         SortPanel.resetSortThread = resetSortThread;
     }

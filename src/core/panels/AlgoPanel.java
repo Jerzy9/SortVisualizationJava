@@ -1,8 +1,8 @@
-package Core;
+package core.panels;
 
-import Components.AlgorithmButton;
-import Components.NumberListener;
-import Components.TextLabel;
+import components.buttons.AlgorithmButton;
+import components.listeners.NumberListener;
+import components.TextLabel;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
