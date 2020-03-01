@@ -24,6 +24,7 @@ public class BubbleSort extends Algorithm {
                     conversions++;
                 }
                 //sleep after every single tick
+                //System.out.println(runningSortThread + "  running inside");
                 if(j%moduloSleep==0) {
                     try {
                         Thread.sleep(sleepTime);

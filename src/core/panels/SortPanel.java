@@ -1,9 +1,11 @@
-package sorting;
+package core.panels;
 
 import components.Column;
 import components.listeners.FloatListener;
 import components.listeners.NumberListener;
 import components.SimpleTimer;
+import sorting.Algorithm;
+import sorting.BubbleSort;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -17,7 +19,6 @@ public class SortPanel extends JPanel implements Runnable{
     private int width, height;
     private Color bgColor;
     private int numOfAlgorithm;
-    private static boolean runningSortThread = false, resetSortThread = false;      // sort thread in Algorithm
     private boolean running = false;                                                // this thread
     private int columnsWidth = 2, sortSpeed;
 
@@ -74,23 +75,33 @@ public class SortPanel extends JPanel implements Runnable{
     }
     public void startButton() {
         // it sets sortThread and start it
-        runningSortThread = true;
-        timer.returnTicking();              // it's running
-        if(currentAlgorithm == null) {
-            setSpeedAlgoAndStats();         // take variables like brickWidth, speed, algorithm and create currentAlgorithm and start it
+        if (currentAlgorithm == null) {
+            setSpeedAlgoAndStats();                     // take variables like brickWidth, speed, algorithm and create currentAlgorithm and start it
+        }
+        if(currentAlgorithm != null){
+            currentAlgorithm.setRunningSort(true);      // start sorting
+            timer.returnTicking();                      // it's running
         }
     }
     public void stopButton() {
-        runningSortThread = false;          // stop sorting
-        timer.stop();                       // timer Thread sleep
+        if(currentAlgorithm != null)  {
+            timer.stop();                               // timer Thread sleep
+            currentAlgorithm.setRunningSort(false);     // stop sorting
+        }
+
     }
     public void resetButton() {
         // it creates new Columns and clears currentAlgorithm
-        if(!runningSortThread) {
-            resetSortThread = true;         // it join() sortThread
-            currentAlgorithm = null;        // it clears currentAlgorithm variable
-            createColumns();                // creates new Columns with different variables, like brickWidth, speed, algorithm
-            timer.reset();                  // it clears time variable
+        //TU JEST PROBLEM, current algorithm jest nulem i dlatego nie można dać drugi raz resetu, i nie odświeżają sie kolumny
+        if(currentAlgorithm != null) {
+            if (!currentAlgorithm.isRunningSort()) {
+                currentAlgorithm.setResetSort(true);     // it join() sortThread
+                currentAlgorithm = null;                 // it clears currentAlgorithm variable
+                createColumns();                         // creates new Columns with different variables, like brickWidth, speed, algorithm
+                timer.reset();                           // it clears time variable
+            }
+        } else {
+            createColumns();
         }
     }
 
@@ -150,12 +161,14 @@ public class SortPanel extends JPanel implements Runnable{
         }
     }
     private void tick() {
-        if (runningSortThread) {
-            if(currentAlgorithm != null) {
+        if(currentAlgorithm != null) {
+             if (currentAlgorithm.isRunningSort()) {
                 comparisonsListener.numberEmitted(currentAlgorithm.getComparisons());
                 conversionsListener.numberEmitted(currentAlgorithm.getConversions());
                 timeListener.floatEmitted(timer.getTime());
-            }
+            } else {
+                 timer.stop();
+             }
         }
     }
     private void createColumns() {
@@ -233,18 +246,6 @@ public class SortPanel extends JPanel implements Runnable{
         float delay = (float) sleepTime/moduloSleep;
         delay = (float) Math.round(delay * 100) / 100;
         delayListener.floatEmitted(delay);
-    }
-    public static boolean isRunningSortThread() {
-        return runningSortThread;
-    }
-    public static void setRunningSortThread(boolean runningSortThread) {
-        SortPanel.runningSortThread = runningSortThread;
-    }
-    public static boolean isResetSortThread() {
-        return resetSortThread;
-    }
-    public static void setResetSortThread(boolean resetSortThread) {
-        SortPanel.resetSortThread = resetSortThread;
     }
     public void setElementsListener(NumberListener listener) {
         this.elementsListener = listener;

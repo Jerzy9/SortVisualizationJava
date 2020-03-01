@@ -5,7 +5,7 @@ import components.listeners.NumberListener;
 import core.panels.AlgoPanel;
 import core.panels.StatsPanel;
 import core.panels.TopPanel;
-import sorting.SortPanel;
+import core.panels.SortPanel;
 
 import javax.swing.*;
 import java.awt.*;

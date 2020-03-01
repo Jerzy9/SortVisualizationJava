@@ -9,8 +9,9 @@ public abstract class Algorithm implements Runnable{
     int sleepTime, moduloSleep;
     List<Column> columns;
     int comparisons = 0,conversions = 0;
+    boolean runningSort = true, resetSort = false;
 
-    Algorithm(List<Column> columns, int sleepTime, int moduloSleep) {
+    public Algorithm(List<Column> columns, int sleepTime, int moduloSleep) {
         this.columns = columns;
         this.sleepTime = sleepTime;
         this.moduloSleep = moduloSleep;
@@ -24,8 +25,8 @@ public abstract class Algorithm implements Runnable{
     }
     public void stop() {
         // sets false running variables
-        SortPanel.setResetSortThread(false);
-        SortPanel.setRunningSortThread(false);
+        resetSort = false;
+        runningSort = false;
         // clear stats variables
         comparisons = 0;
         conversions = 0;
@@ -45,8 +46,8 @@ public abstract class Algorithm implements Runnable{
 
     public void checkIfPauseAndReset() {
         // user can reset program only if running == false
-        while (!SortPanel.isRunningSortThread()) {
-            if (SortPanel.isResetSortThread()) {
+        while (!runningSort) {
+            if (resetSort) {
                 stop();
             }
             // it checks four times per second
@@ -60,16 +61,26 @@ public abstract class Algorithm implements Runnable{
     public int getComparisons() {
         return comparisons;
     }
-
     public void setComparisons(int comparisons) {
         this.comparisons = comparisons;
     }
-
     public int getConversions() {
         return conversions;
     }
-
     public void setConversions(int conversions) {
         this.conversions = conversions;
     }
+    public boolean isRunningSort() {
+        return runningSort;
+    }
+    public void setRunningSort(boolean runningSort) {
+        this.runningSort = runningSort;
+    }
+    public boolean isResetSort() {
+        return resetSort;
+    }
+    public void setResetSort(boolean resetSort) {
+        this.resetSort = resetSort;
+    }
+
 }
