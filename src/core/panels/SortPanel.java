@@ -237,7 +237,6 @@ public class SortPanel extends JPanel implements Runnable{
                 currentAlgorithm = new BubbleSort(columns, sleepTime, moduloSleep);
                 break;
         }
-
         // Stats Panel elements:
         // elements
         elementsListener.numberEmitted(columns.size());
