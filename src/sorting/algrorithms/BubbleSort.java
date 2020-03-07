@@ -25,6 +25,9 @@ public class BubbleSort extends Algorithm {
                 }
                 //sleep after every single tick
                 System.out.println("  running inside");
+                System.out.println("kappa mappa ");
+                System.out.println("  running inside");
+                System.out.println("kappa mappa ");
                 tickSleep(j);
                 //sleep until on = true, so until user will press START button again
                 checkIfPauseAndReset();
