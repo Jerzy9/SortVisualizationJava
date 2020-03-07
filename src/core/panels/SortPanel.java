@@ -5,7 +5,8 @@ import components.listeners.FloatListener;
 import components.listeners.NumberListener;
 import components.SimpleTimer;
 import sorting.Algorithm;
-import sorting.BubbleSort;
+import sorting.algrorithms.BubbleSort;
+import sorting.algrorithms.SelectionSort;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -92,7 +93,6 @@ public class SortPanel extends JPanel implements Runnable{
     }
     public void resetButton() {
         // it creates new Columns and clears currentAlgorithm
-        //TU JEST PROBLEM, current algorithm jest nulem i dlatego nie można dać drugi raz resetu, i nie odświeżają sie kolumny
         if(currentAlgorithm != null) {
             if (!currentAlgorithm.isRunningSort()) {
                 currentAlgorithm.setResetSort(true);     // it join() sortThread
@@ -111,7 +111,7 @@ public class SortPanel extends JPanel implements Runnable{
             tick();
             repaint();
             try {
-                thread.sleep(1000/120);
+                Thread.sleep(1000/120);
             } catch (InterruptedException ex) {
                 ex.fillInStackTrace();
                 System.out.println("Thread.sleep error");
@@ -156,7 +156,8 @@ public class SortPanel extends JPanel implements Runnable{
         running = false;
         try {
             thread.join();
-        } catch (Exception ex) {
+        } catch (InterruptedException ex) {
+            ex.fillInStackTrace();
             System.out.println("Thread join error");
         }
     }
@@ -167,8 +168,8 @@ public class SortPanel extends JPanel implements Runnable{
                 conversionsListener.numberEmitted(currentAlgorithm.getConversions());
                 timeListener.floatEmitted(timer.getTime());
             } else {
-                 timer.stop();
-             }
+                timer.stop();
+            }
         }
     }
     private void createColumns() {
@@ -236,6 +237,9 @@ public class SortPanel extends JPanel implements Runnable{
             case 0:         // Bubble sort
                 currentAlgorithm = new BubbleSort(columns, sleepTime, moduloSleep);
                 break;
+            case 1:         // Bubble sort
+                currentAlgorithm = new SelectionSort(columns, sleepTime, moduloSleep);
+                break;
         }
         // Stats Panel elements:
         // elements
@@ -261,5 +265,4 @@ public class SortPanel extends JPanel implements Runnable{
     public void setDelayListener(FloatListener listener) {
         this.delayListener = listener;
     }
-
 }

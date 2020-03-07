@@ -38,10 +38,10 @@ public class AlgoPanel extends JPanel implements ActionListener {
             buttons.add(new AlgorithmButton(i));
 
         buttons.get(0).setText("Bubble Sort");
-        buttons.get(1).setText("Bubble Sort");
-        buttons.get(2).setText("Bubble Sort");
-        buttons.get(3).setText("Bubble Sort");
-        buttons.get(4).setText("Bubble Sort");
+        buttons.get(1).setText("Selection Sort");
+        buttons.get(2).setText("Insertion Sort");
+        buttons.get(3).setText("Quick Sort");
+        buttons.get(4).setText("Marge Sort");
         buttons.get(5).setText("Bubble Sort");
         buttons.get(6).setText("Bubble Sort");
         buttons.get(7).setText("Bubble Sort");
@@ -72,15 +72,6 @@ public class AlgoPanel extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         AlgorithmButton clicked = (AlgorithmButton) e.getSource();
-        for (AlgorithmButton button : buttons) {
-            if (clicked != button)  {
-                if(button.getClicked()) {
-                    button.setClicked(false);
-                    //button.paintComponent(g);
-                }
-            }
-        }
-
         //send number of clicked button to sort panel, ONLY when it hasn't been clicked before
         if(numberListener !=null) {
             for (AlgorithmButton button : buttons) {
@@ -89,5 +80,15 @@ public class AlgoPanel extends JPanel implements ActionListener {
                 if (clicked != button) button.setClicked(false);
             }
         }
+        // try to unclicked rest of buttons
+        // it has to be repaid!
+        /*for (AlgorithmButton button : buttons) {
+            if (clicked != button)  {
+                if(button.getClicked()) {
+                    button.setClicked(false);
+                    //button.paintComponent(g);
+                }
+            }
+        }*/
     }
 }

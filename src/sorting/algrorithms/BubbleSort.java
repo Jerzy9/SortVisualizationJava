@@ -1,6 +1,7 @@
-package sorting;
+package sorting.algrorithms;
 
 import components.Column;
+import sorting.Algorithm;
 
 import java.util.List;
 
@@ -15,7 +16,6 @@ public class BubbleSort extends Algorithm {
             for (int j = 0; j < columns.size()-i-1; j++) {
 
                 comparisons++;
-
                 if (columns.get(j).getHeight() > columns.get(j+1).getHeight()) {
                     int temp = columns.get(j).getHeight();
                     columns.get(j).setHeight(columns.get(j+1).getHeight());
@@ -25,13 +25,7 @@ public class BubbleSort extends Algorithm {
                 }
                 //sleep after every single tick
                 //System.out.println(runningSortThread + "  running inside");
-                if(j%moduloSleep==0) {
-                    try {
-                        Thread.sleep(sleepTime);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
+                tickSleep(j);
                 //sleep until on = true, so until user will press START button again
                 checkIfPauseAndReset();
             }

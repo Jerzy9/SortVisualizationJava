@@ -6,10 +6,11 @@ import java.util.List;
 
 public abstract class Algorithm implements Runnable{
     private Thread thread;
-    int sleepTime, moduloSleep;
-    List<Column> columns;
-    int comparisons = 0,conversions = 0;
-    boolean runningSort = true, resetSort = false;
+    private int sleepTime, moduloSleep;
+    protected List<Column> columns;
+    protected int comparisons = 0, conversions = 0;
+
+    private boolean runningSort = true, resetSort = false;
 
     public Algorithm(List<Column> columns, int sleepTime, int moduloSleep) {
         this.columns = columns;
@@ -41,6 +42,7 @@ public abstract class Algorithm implements Runnable{
     @Override
     public void run() {
         sort();
+        // stop when sort is over
         stop();
     }
 
@@ -52,7 +54,16 @@ public abstract class Algorithm implements Runnable{
             }
             // it checks four times per second
             try {
-                Thread.sleep(1000/4);
+                Thread.sleep(1000/60);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    public void tickSleep(int j) {
+        if(j%moduloSleep==0) {
+            try {
+                Thread.sleep(sleepTime);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -82,5 +93,4 @@ public abstract class Algorithm implements Runnable{
     public void setResetSort(boolean resetSort) {
         this.resetSort = resetSort;
     }
-
 }
