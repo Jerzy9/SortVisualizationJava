@@ -1,16 +1,26 @@
 package sorting;
 
 import components.Column;
+import components.listeners.NumberListener;
 
+import java.awt.*;
 import java.util.List;
 
-public abstract class Algorithm implements Runnable{
+public abstract class Algorithm implements Runnable {
     private Thread thread;
     private int sleepTime, moduloSleep;
     protected List<Column> columns;
-    protected int comparisons = 0, conversions = 0;
+
+    private int comparisons, conversions = 0;
 
     private boolean runningSort = true, resetSort = false;
+    private boolean sorted = false;
+
+    protected Color sortedColor = new Color(12,123,23),
+                    comparedColor = new Color(242,80,100),
+                    normalColor = Color.pink;
+    private NumberListener columnHeightListener;
+    public int currentHeight = 0;
 
     public Algorithm(List<Column> columns, int sleepTime, int moduloSleep) {
         this.columns = columns;
@@ -25,12 +35,10 @@ public abstract class Algorithm implements Runnable{
         thread.start();
     }
     public void stop() {
+        sorted = true;
         // sets false running variables
         resetSort = false;
         runningSort = false;
-        // clear stats variables
-        comparisons = 0;
-        conversions = 0;
         // kill thread
         try {
             this.thread.join();
@@ -41,26 +49,25 @@ public abstract class Algorithm implements Runnable{
 
     @Override
     public void run() {
-        sort();
-        // stop when sort is over
-        stop();
+        if(runningSort) {
+            sort();
+            stop();                         // stop when sort is over
+        }
     }
 
-    public void checkIfPauseAndReset() {
-        // user can reset program only if running == false
-        while (!runningSort) {
+    protected void checkIfPauseAndReset() {
+        while (!runningSort) {              // user can reset program only if running == false
             if (resetSort) {
                 stop();
             }
-            // it checks four times per second
             try {
-                Thread.sleep(1000/60);
+                Thread.sleep(1000/120);  // it checks four times per second
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
     }
-    public void tickSleep(int j) {
+    protected void tickSleep(int j) {
         if(j%moduloSleep==0) {
             try {
                 Thread.sleep(sleepTime);
@@ -69,18 +76,28 @@ public abstract class Algorithm implements Runnable{
             }
         }
     }
-    public int getComparisons() {
-        return comparisons;
+    public void changeColumnsColor(Color color, int index) {
+        int size = 0;                       // it's responsible for how many columns are colored form both sides,
+        if(sleepTime == 1) {                // depends how fast sorting goes
+            size = 3;
+        } else if (sleepTime > 1 && sleepTime < 5) {
+            size = 2;
+        } else {
+            size = 1;
+        }
+        for (int i = 0; i < size; i++) {
+            if (index-i > 0) columns.get(index-i).setColor(color);
+            if (index+i < columns.size()) columns.get(index+i).setColor(color);
+        }
     }
-    public void setComparisons(int comparisons) {
-        this.comparisons = comparisons;
+    public void countComparisons() {
+        ++comparisons;
     }
-    public int getConversions() {
-        return conversions;
+    public void countConversions() {
+        ++conversions;
     }
-    public void setConversions(int conversions) {
-        this.conversions = conversions;
-    }
+
+    ////    Getters and Setters     ////
     public boolean isRunningSort() {
         return runningSort;
     }
@@ -92,5 +109,17 @@ public abstract class Algorithm implements Runnable{
     }
     public void setResetSort(boolean resetSort) {
         this.resetSort = resetSort;
+    }
+    public int getComparisons() {
+        return comparisons;
+    }
+    public int getConversions() {
+        return conversions;
+    }
+    public boolean isSorted() {
+        return sorted;
+    }
+    public int getCurrentColumnHeight() {
+        return currentHeight;
     }
 }

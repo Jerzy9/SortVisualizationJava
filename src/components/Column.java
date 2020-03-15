@@ -19,11 +19,15 @@ public class Column {
         g.setColor(color);
         g.fillRect(xStartPosition+x, yStartPosition-height, width, height);
     }
+
+    ////    Getters and Setters     ////
     public int getHeight() {
         return height;
     }
-
     public void setHeight(int height) {
         this.height = height;
+    }
+    public void setColor(Color color) {
+        this.color = color;
     }
 }
