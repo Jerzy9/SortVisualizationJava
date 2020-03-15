@@ -35,13 +35,15 @@ public class SimpleTimer {
     public void returnTicking() {       // think of a better name
         timerRunning = true;
     }
-    public float getTime() {
-        return ((float) time/100);
-    }
-    public void stop() {
+    public void pause() {
         timerRunning = false;
     }
     public void reset() {
         time = 0;
+        timerRunning = false;
+    }
+    ////    Getters and Setters     ////
+    public float getTime() {
+        return ((float) time/100);
     }
 }

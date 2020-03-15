@@ -1,11 +1,13 @@
 package core.panels;
 
 import components.Column;
+import components.SoundEffect;
 import components.listeners.FloatListener;
 import components.listeners.NumberListener;
 import components.SimpleTimer;
 import sorting.Algorithm;
 import sorting.algrorithms.BubbleSort;
+import sorting.algrorithms.InsertionSort;
 import sorting.algrorithms.SelectionSort;
 
 import javax.swing.*;
@@ -20,7 +22,7 @@ public class SortPanel extends JPanel implements Runnable{
     private int width, height;
     private Color bgColor;
     private int numOfAlgorithm;
-    private boolean running = false;                                                // this thread
+    private boolean running = false, ticking;
     private int columnsWidth = 2, sortSpeed;
 
     private static List<Column> columns;
@@ -35,6 +37,7 @@ public class SortPanel extends JPanel implements Runnable{
                             timeListener;
 
     private SimpleTimer timer;
+    private SoundEffect sound;
 
     public SortPanel(int width, int height, Color bgColor) {
         this.width = width;
@@ -47,58 +50,36 @@ public class SortPanel extends JPanel implements Runnable{
        start();
        createColumns();
        timer = new SimpleTimer();
+       //sound = new SoundEffect();
 
     }
-    private void setSortPanel() {
-        Dimension dim = new Dimension(width,height);
-        setOpaque(true);
-        setPreferredSize(dim);
-        setMaximumSize(dim);
-        setMinimumSize(dim);
-        setBackground(bgColor);
-        setBorder(new LineBorder(Color.black, 4));
-    }
-    public void setNumOfAlgorithm(int num) {
-        this.numOfAlgorithm = num;
-    }
-    public void setColumnsWidth(int width) {
-        this.columnsWidth = width;
-        resetButton();
-    }
-    public int getColumnsWidth() {
-        return columnsWidth;
-    }
-    public void setSortSpeed(int sortSpeed) {
-        this.sortSpeed = sortSpeed;
-    }
-    public int getSortSpeed() {
-        return sortSpeed;
-    }
+    // Reactions on pressed Button
     public void startButton() {
-        // it sets sortThread and start it
-        if (currentAlgorithm == null) {
-            setSpeedAlgoAndStats();                     // take variables like brickWidth, speed, algorithm and create currentAlgorithm and start it
+        if (currentAlgorithm == null){
+            setSpeedAlgoAndStats();                             // take variables like brickWidth, speed, algorithm and create currentAlgorithm and start it
         }
-        if(currentAlgorithm != null){
-            currentAlgorithm.setRunningSort(true);      // start sorting
-            timer.returnTicking();                      // it's running
+        if(currentAlgorithm != null) {
+            if(!currentAlgorithm.isSorted()) {
+                currentAlgorithm.setRunningSort(true);          // start sorting
+                timer.returnTicking();                          // it's running
+                ticking = true;
+            }
         }
     }
     public void stopButton() {
         if(currentAlgorithm != null)  {
-            timer.stop();                               // timer Thread sleep
-            currentAlgorithm.setRunningSort(false);     // stop sorting
+            timer.pause();                               // timer Thread sleep
+            currentAlgorithm.setRunningSort(false);     // pause sorting
+            //sound.setRunning(false);                    // kill sound effect's thread
         }
-
     }
-    public void resetButton() {
-        // it creates new Columns and clears currentAlgorithm
+    public void resetButton() {                                 // it creates new Columns and clears currentAlgorithm
         if(currentAlgorithm != null) {
             if (!currentAlgorithm.isRunningSort()) {
-                currentAlgorithm.setResetSort(true);     // it join() sortThread
-                currentAlgorithm = null;                 // it clears currentAlgorithm variable
-                createColumns();                         // creates new Columns with different variables, like brickWidth, speed, algorithm
-                timer.reset();                           // it clears time variable
+                currentAlgorithm.setResetSort(true);            // it join() sortThread
+                currentAlgorithm = null;                        // it clears currentAlgorithm variable
+                createColumns();                                // creates new Columns with different variables, like brickWidth, speed, algorithm
+                timer.reset();                                  // it clears time variable
             }
         } else {
             createColumns();
@@ -162,14 +143,16 @@ public class SortPanel extends JPanel implements Runnable{
         }
     }
     private void tick() {
-        if(currentAlgorithm != null) {
-             if (currentAlgorithm.isRunningSort()) {
-                comparisonsListener.numberEmitted(currentAlgorithm.getComparisons());
-                conversionsListener.numberEmitted(currentAlgorithm.getConversions());
-                timeListener.floatEmitted(timer.getTime());
+        if(ticking && currentAlgorithm != null) {
+
+            if(currentAlgorithm.isSorted()) {
+                sendStatsToStatsPanel();                 // it corrects actual value of stats
+                ticking = false;                         // ticking off
             } else {
-                timer.stop();
-            }
+                 sendStatsToStatsPanel();               // sends stats while sorting
+             }
+            //sound.setHeight(currentAlgorithm.getCurrentColumnHeight());
+            //sound.generateTone(currentAlgorithm.getCurrentColumnHeight()*2,10);
         }
     }
     private void createColumns() {
@@ -202,8 +185,8 @@ public class SortPanel extends JPanel implements Runnable{
     }
     private void setSpeedAlgoAndStats() {
         int sleepTime = 1;
-        int moduloSleep = 64;        //think more of better name
-        switch (sortSpeed) {
+        int moduloSleep = 64;                                           //think more of better name
+        switch (sortSpeed) {                                            // set Speed
             case 1:
                 sleepTime = 40;
                 moduloSleep = 1;
@@ -234,22 +217,35 @@ public class SortPanel extends JPanel implements Runnable{
                 break;
         }
         switch (numOfAlgorithm) {
-            case 0:         // Bubble sort
+            case 0:                                                     // Bubble sort
                 currentAlgorithm = new BubbleSort(columns, sleepTime, moduloSleep);
                 break;
-            case 1:         // Bubble sort
+            case 1:                                                     // Selection sort
                 currentAlgorithm = new SelectionSort(columns, sleepTime, moduloSleep);
                 break;
+            case 2:                                                     // Insertion sort
+                currentAlgorithm = new InsertionSort(columns, sleepTime, moduloSleep);
         }
-        // Stats Panel elements:
-        // elements
-        elementsListener.numberEmitted(columns.size());
 
-        // delay
-        float delay = (float) sleepTime/moduloSleep;
+        ////    StatsPanel stats:  ////                                 // it's here, not in sendStatsToStatsPanel, because it has to be send ONLY ONCE
+
+        elementsListener.numberEmitted(columns.size());                 // elements
+
+        float delay = (float) sleepTime/moduloSleep;                    // Delay
         delay = (float) Math.round(delay * 100) / 100;
         delayListener.floatEmitted(delay);
+
+        // SOUND
+        //sound.start();
+
     }
+    private void sendStatsToStatsPanel () {
+        comparisonsListener.numberEmitted(currentAlgorithm.getComparisons());
+        conversionsListener.numberEmitted(currentAlgorithm.getConversions());
+        timeListener.floatEmitted(timer.getTime());
+    }
+
+    ////    Getters and Setters     ////
     public void setElementsListener(NumberListener listener) {
         this.elementsListener = listener;
     }
@@ -264,5 +260,30 @@ public class SortPanel extends JPanel implements Runnable{
     }
     public void setDelayListener(FloatListener listener) {
         this.delayListener = listener;
+    }
+    private void setSortPanel() {
+        Dimension dim = new Dimension(width,height);
+        setOpaque(true);
+        setPreferredSize(dim);
+        setMaximumSize(dim);
+        setMinimumSize(dim);
+        setBackground(bgColor);
+        setBorder(new LineBorder(Color.black, 4));
+    }
+    public void setNumOfAlgorithm(int num) {
+        this.numOfAlgorithm = num;
+    }
+    public void setColumnsWidth(int width) {
+        this.columnsWidth = width;
+        resetButton();      // if you're moving a size slider, it reset columns array
+    }
+    public int getColumnsWidth() {
+        return columnsWidth;
+    }
+    public void setSortSpeed(int sortSpeed) {
+        this.sortSpeed = sortSpeed;
+    }
+    public int getSortSpeed() {
+        return sortSpeed;
     }
 }

@@ -116,7 +116,7 @@ public class MainFrame extends JFrame{
         sideContainer.setLayout(new BoxLayout(sideContainer, BoxLayout.Y_AXIS));
 
         //Algorithm Panel
-        algoPanel.setNumberListener(new NumberListener() {
+        algoPanel.setAlgorithmListener(new NumberListener() {
             @Override
             public void numberEmitted(int number) {
                 sortPanel.setNumOfAlgorithm(number);
@@ -124,6 +124,9 @@ public class MainFrame extends JFrame{
         });
 
         //Stats Panel
+
+        //Algorithm
+
 
         ///// Adding Components /////
         middleContainer.add(topPanel);
@@ -148,4 +151,5 @@ public class MainFrame extends JFrame{
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
     }
+
 }

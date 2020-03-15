@@ -9,6 +9,7 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class AlgoPanel extends JPanel implements ActionListener {
 
     private List<AlgorithmButton> buttons;
 
-    private NumberListener numberListener;
+    private NumberListener algorithmListener;
 
     public AlgoPanel(int width, int height, Color bgColor) {
         this.width = width;
@@ -32,7 +33,7 @@ public class AlgoPanel extends JPanel implements ActionListener {
         TextLabel title = new TextLabel("Algorithm:",24,bgColor);
         title.setPreferredSize(new Dimension(150,40));
 
-        //Creating buttons and setting index of every button
+        // Creating buttons and setting index of every button
         buttons = new ArrayList<>();
         for (int i = 0; i < 8; i++)
             buttons.add(new AlgorithmButton(i));
@@ -46,7 +47,7 @@ public class AlgoPanel extends JPanel implements ActionListener {
         buttons.get(6).setText("Bubble Sort");
         buttons.get(7).setText("Bubble Sort");
 
-        //Adding action listener and to layout
+        // Adding action listener and to layout
         for (AlgorithmButton button : buttons) {
             button.addActionListener(this);
             layout.add(button);
@@ -65,23 +66,24 @@ public class AlgoPanel extends JPanel implements ActionListener {
         setBackground(bgColor);
         setBorder(new LineBorder(Color.black, 4));
     }
-    public void setNumberListener(NumberListener listener) {
-        this.numberListener = listener;
+    public void setAlgorithmListener(NumberListener listener) {
+        this.algorithmListener = listener;
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(ActionEvent e) {                        //send number of clicked button to sort panel, ONLY when it hasn't been clicked before
         AlgorithmButton clicked = (AlgorithmButton) e.getSource();
-        //send number of clicked button to sort panel, ONLY when it hasn't been clicked before
-        if(numberListener !=null) {
+        if(algorithmListener !=null) {
             for (AlgorithmButton button : buttons) {
                 if (clicked == button && !button.getClicked())
-                    numberListener.numberEmitted(button.getIndex());
-                if (clicked != button) button.setClicked(false);
+                    algorithmListener.numberEmitted(button.getIndex());
+                if (clicked != button) //button.mouseClicked();
+                    System.out.println("kek");
             }
         }
         // try to unclicked rest of buttons
         // it has to be repaid!
+
         /*for (AlgorithmButton button : buttons) {
             if (clicked != button)  {
                 if(button.getClicked()) {

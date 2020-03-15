@@ -16,25 +16,36 @@ public class SelectionSort extends Algorithm {
             int min = columns.get(i).getHeight();
             int index = i;
 
+            changeColumnsColor(comparedColor, i);
+
             for (int j = i + 1; j < columns.size(); j++) {
 
-                comparisons++;
+                changeColumnsColor(comparedColor, j);
+
+                countComparisons();
                 if(min > columns.get(j).getHeight()) {
                     min = columns.get(j).getHeight();
                     index = j;
+                    //currentHeight = min; //SOUND
                 }
 
                 tickSleep(j);
                 checkIfPauseAndReset();
 
+                changeColumnsColor(normalColor, j);
+
             }
+
             if(columns.get(i).getHeight() != min) {
                 int temp = columns.get(i).getHeight();
                 columns.get(i).setHeight(min);
                 columns.get(index).setHeight(temp);
 
-                conversions++;
+
+
+                countConversions();
             }
+            changeColumnsColor(normalColor, i);
         }
     }
 }
