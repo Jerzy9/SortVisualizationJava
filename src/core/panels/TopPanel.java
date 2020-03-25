@@ -2,6 +2,7 @@ package core.panels;
 
 import components.*;
 import components.buttons.OnOffButton;
+import components.listeners.BooleanListener;
 import components.listeners.NumberListener;
 
 import javax.swing.*;
@@ -20,6 +21,8 @@ public class TopPanel extends JPanel implements ActionListener, ChangeListener {
     private NumberListener buttonsListener,
                             sizeListener,
                             speedListener;
+    private BooleanListener soundListener;
+    private CheckBox soundBox;
 
     public TopPanel(int width, int height, Color bgColor) {
         this.width = width;
@@ -32,6 +35,22 @@ public class TopPanel extends JPanel implements ActionListener, ChangeListener {
         int fontSize = 16;
         TextLabel sizeText = new TextLabel("size: ", fontSize, bgColor);
         TextLabel speedText = new TextLabel("speed: ", fontSize, bgColor);
+        //TextLabel soundText = new TextLabel("sound:", fontSize, bgColor);
+
+        // creating box and adding *** listener
+        soundBox = new CheckBox("sound: ", fontSize, bgColor);
+        soundBox.setSelected(true);
+        soundBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                CheckBox clicked = (CheckBox) e.getSource();
+                if(soundListener!=null) {
+                    if(clicked == soundBox)
+                         soundListener.booleanEmitted(soundBox.isSelected());
+
+                }
+            }
+        });
 
         // creating sliders and adding Change listener
         speedSlider = new Slider(bgColor,7,1,6);
@@ -48,6 +67,8 @@ public class TopPanel extends JPanel implements ActionListener, ChangeListener {
         resetButton.addActionListener(this);
 
         // adding components
+        //add(soundText);
+        add(soundBox);
         add(sizeText);
         add(sizeSlider);
         add(speedText);
@@ -75,6 +96,9 @@ public class TopPanel extends JPanel implements ActionListener, ChangeListener {
     }
     public void setSpeedListener(NumberListener listener) {
         this.speedListener = listener;
+    }
+    public void setSoundListener(BooleanListener listener) {
+        this.soundListener = listener;
     }
 
     @Override

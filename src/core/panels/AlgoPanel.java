@@ -43,9 +43,9 @@ public class AlgoPanel extends JPanel implements ActionListener {
         buttons.get(2).setText("Insertion Sort");
         buttons.get(3).setText("Quick Sort");
         buttons.get(4).setText("Marge Sort");
-        buttons.get(5).setText("Bubble Sort");
-        buttons.get(6).setText("Bubble Sort");
-        buttons.get(7).setText("Bubble Sort");
+        buttons.get(5).setText("Radix Sort");
+        buttons.get(6).setText("Shell Sort");
+        buttons.get(7).setText("Cocktail Sort");
 
         // Adding action listener and to layout
         for (AlgorithmButton button : buttons) {
@@ -77,20 +77,11 @@ public class AlgoPanel extends JPanel implements ActionListener {
             for (AlgorithmButton button : buttons) {
                 if (clicked == button && !button.getClicked())
                     algorithmListener.numberEmitted(button.getIndex());
-                if (clicked != button) //button.mouseClicked();
-                    System.out.println("kek");
-            }
-        }
-        // try to unclicked rest of buttons
-        // it has to be repaid!
-
-        /*for (AlgorithmButton button : buttons) {
-            if (clicked != button)  {
-                if(button.getClicked()) {
+                else if (clicked != button) {
                     button.setClicked(false);
-                    //button.paintComponent(g);
+                    button.repaint();
                 }
             }
-        }*/
+        }
     }
 }

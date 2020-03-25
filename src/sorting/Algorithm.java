@@ -2,11 +2,14 @@ package sorting;
 
 import components.Column;
 import components.listeners.NumberListener;
+import components.observer_pattern.Observer;
+import core.panels.SortPanel;
+
 
 import java.awt.*;
 import java.util.List;
 
-public abstract class Algorithm implements Runnable {
+public abstract class Algorithm implements Runnable, Observer {
     private Thread thread;
     private int sleepTime, moduloSleep;
     protected List<Column> columns;
@@ -22,7 +25,10 @@ public abstract class Algorithm implements Runnable {
     private NumberListener columnHeightListener;
     public int currentHeight = 0;
 
-    public Algorithm(List<Column> columns, int sleepTime, int moduloSleep) {
+    private SortPanel sortPanel;
+
+    public Algorithm(SortPanel sortpanel, List<Column> columns, int sleepTime, int moduloSleep) {
+        this.sortPanel = sortpanel;
         this.columns = columns;
         this.sleepTime = sleepTime;
         this.moduloSleep = moduloSleep;
@@ -85,28 +91,26 @@ public abstract class Algorithm implements Runnable {
         } else {
             size = 1;
         }
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i <= size; i++) {
             if (index-i > 0) columns.get(index-i).setColor(color);
             if (index+i < columns.size()) columns.get(index+i).setColor(color);
         }
     }
-    public void countComparisons() {
+    @Override
+    public void updateRunning() {
+        this.runningSort = sortPanel.isSortRunning();
+        this.resetSort = sortPanel.isSortReset();
+
+    }
+
+    protected void countComparisons() {
         ++comparisons;
     }
-    public void countConversions() {
+    protected void countConversions() {
         ++conversions;
     }
 
     ////    Getters and Setters     ////
-    public boolean isRunningSort() {
-        return runningSort;
-    }
-    public void setRunningSort(boolean runningSort) {
-        this.runningSort = runningSort;
-    }
-    public boolean isResetSort() {
-        return resetSort;
-    }
     public void setResetSort(boolean resetSort) {
         this.resetSort = resetSort;
     }

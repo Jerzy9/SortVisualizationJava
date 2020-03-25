@@ -1,13 +1,14 @@
 package sorting.algrorithms;
 
 import components.Column;
+import core.panels.SortPanel;
 import sorting.Algorithm;
 
 import java.util.List;
 
 public class SelectionSort extends Algorithm {
-    public SelectionSort(List<Column> columns, int sleepTime, int moduloSleep) {
-        super(columns, sleepTime, moduloSleep);
+    public SelectionSort(SortPanel sortPanel, List<Column> columns, int sleepTime, int moduloSleep) {
+        super(sortPanel, columns, sleepTime, moduloSleep);
     }
 
     @Override
@@ -16,11 +17,12 @@ public class SelectionSort extends Algorithm {
             int min = columns.get(i).getHeight();
             int index = i;
 
-            changeColumnsColor(comparedColor, i);
+
 
             for (int j = i + 1; j < columns.size(); j++) {
 
-                changeColumnsColor(comparedColor, j);
+                changeColumnsColor(comparedColor, j);               // change color
+                changeColumnsColor(comparedColor, i);                   // change color
 
                 countComparisons();
                 if(min > columns.get(j).getHeight()) {
@@ -32,7 +34,7 @@ public class SelectionSort extends Algorithm {
                 tickSleep(j);
                 checkIfPauseAndReset();
 
-                changeColumnsColor(normalColor, j);
+                changeColumnsColor(normalColor, j);                 // change color back
 
             }
 
@@ -45,7 +47,7 @@ public class SelectionSort extends Algorithm {
 
                 countConversions();
             }
-            changeColumnsColor(normalColor, i);
+            changeColumnsColor(normalColor, i);                     // change color back
         }
     }
 }

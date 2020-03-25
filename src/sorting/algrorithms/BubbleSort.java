@@ -1,14 +1,15 @@
 package sorting.algrorithms;
 
 import components.Column;
+import core.panels.SortPanel;
 import sorting.Algorithm;
 
 import java.util.List;
 
 public class BubbleSort extends Algorithm {
 
-    public BubbleSort(List<Column> columns,  int sleepTime, int moduloSleep) {
-        super(columns, sleepTime, moduloSleep);
+    public BubbleSort(SortPanel sortPanel, List<Column> columns, int sleepTime, int moduloSleep) {
+        super(sortPanel, columns, sleepTime, moduloSleep);
     }
 
     public void sort() {
@@ -27,7 +28,7 @@ public class BubbleSort extends Algorithm {
                     columns.get(j+1).setHeight(temp);
 
                     countConversions();
-                    //currentHeight = columns.get(j).getHeight(); // SOUND
+
                 }
                 // sleep after every single tick
                 tickSleep(j);
@@ -36,8 +37,9 @@ public class BubbleSort extends Algorithm {
 
                 changeColumnsColor(normalColor, j+1);
                 changeColumnsColor(normalColor, j);
-
+                currentHeight = columns.get(j).getHeight(); // SOUND
             }
+
         }
     }
 }

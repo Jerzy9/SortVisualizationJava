@@ -5,10 +5,10 @@ import components.SoundEffect;
 import components.listeners.FloatListener;
 import components.listeners.NumberListener;
 import components.SimpleTimer;
+import components.observer_pattern.Observable;
+import components.observer_pattern.Observer;
 import sorting.Algorithm;
-import sorting.algrorithms.BubbleSort;
-import sorting.algrorithms.InsertionSort;
-import sorting.algrorithms.SelectionSort;
+import sorting.algrorithms.*;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -17,12 +17,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class SortPanel extends JPanel implements Runnable{
+public class SortPanel extends JPanel implements Runnable, Observable {
 
     private int width, height;
     private Color bgColor;
     private int numOfAlgorithm;
-    private boolean running = false, ticking;
+    private boolean running = false, sortRunning = false, sortReset = false;
     private int columnsWidth = 2, sortSpeed;
 
     private static List<Column> columns;
@@ -39,47 +39,54 @@ public class SortPanel extends JPanel implements Runnable{
     private SimpleTimer timer;
     private SoundEffect sound;
 
+    private boolean SoundOn = true;
+
+    private List<Observer> observers;
+
     public SortPanel(int width, int height, Color bgColor) {
         this.width = width;
         this.height = height;
         this.bgColor = bgColor;
 
         columns = new ArrayList<>();
+        observers = new ArrayList<>();
 
        setSortPanel();
        start();
        createColumns();
-       timer = new SimpleTimer();
-       //sound = new SoundEffect();
+       timer = new SimpleTimer(this);
+       sound = new SoundEffect(this);
+
+       observers.add(sound);
+       observers.add(timer);
 
     }
     // Reactions on pressed Button
     public void startButton() {
-        if (currentAlgorithm == null){
+        if (currentAlgorithm == null) {
             setSpeedAlgoAndStats();                             // take variables like brickWidth, speed, algorithm and create currentAlgorithm and start it
         }
         if(currentAlgorithm != null) {
             if(!currentAlgorithm.isSorted()) {
-                currentAlgorithm.setRunningSort(true);          // start sorting
-                timer.returnTicking();                          // it's running
-                ticking = true;
+                sortRunning = true;
+                inform();
             }
         }
     }
     public void stopButton() {
         if(currentAlgorithm != null)  {
-            timer.pause();                               // timer Thread sleep
-            currentAlgorithm.setRunningSort(false);     // pause sorting
-            //sound.setRunning(false);                    // kill sound effect's thread
+            sortRunning = false;
+            inform();
         }
     }
     public void resetButton() {                                 // it creates new Columns and clears currentAlgorithm
         if(currentAlgorithm != null) {
-            if (!currentAlgorithm.isRunningSort()) {
-                currentAlgorithm.setResetSort(true);            // it join() sortThread
+            if (!sortRunning) {
+                sortReset = true;                               // it join() sortThread
+                inform();                                       // it informs all observers
+                sortReset = false;
                 currentAlgorithm = null;                        // it clears currentAlgorithm variable
                 createColumns();                                // creates new Columns with different variables, like brickWidth, speed, algorithm
-                timer.reset();                                  // it clears time variable
             }
         } else {
             createColumns();
@@ -89,8 +96,10 @@ public class SortPanel extends JPanel implements Runnable{
     @Override
     public void run() {
         while (running) {
-            tick();
-            repaint();
+            if (sortRunning) {
+                tick();
+                repaint();
+            }
             try {
                 Thread.sleep(1000/120);
             } catch (InterruptedException ex) {
@@ -143,16 +152,17 @@ public class SortPanel extends JPanel implements Runnable{
         }
     }
     private void tick() {
-        if(ticking && currentAlgorithm != null) {
-
+        if(currentAlgorithm != null) {
             if(currentAlgorithm.isSorted()) {
                 sendStatsToStatsPanel();                 // it corrects actual value of stats
-                ticking = false;                         // ticking off
+                sortRunning = false;                     // sorting off
+                inform();
             } else {
-                 sendStatsToStatsPanel();               // sends stats while sorting
+                 sendStatsToStatsPanel();               // sends stats while it's sorting
              }
-            //sound.setHeight(currentAlgorithm.getCurrentColumnHeight());
-            //sound.generateTone(currentAlgorithm.getCurrentColumnHeight()*2,10);
+            if(isSoundOn()) {
+                sound.setHeight(currentAlgorithm.getCurrentColumnHeight());
+            }
         }
     }
     private void createColumns() {
@@ -182,61 +192,89 @@ public class SortPanel extends JPanel implements Runnable{
             int randomHeight = r.nextInt(700/brickLength)+1;
             columns.add(new Column(i,i*brickLength, brickLength,randomHeight*brickLength));
         }
+        repaint();                                                      // repaint, because it won't repaint if sortRunning = false
     }
     private void setSpeedAlgoAndStats() {
-        int sleepTime = 1;
-        int moduloSleep = 64;                                           //think more of better name
-        switch (sortSpeed) {                                            // set Speed
+        int sleepTime = 1;                                              //sleep time
+        int sleepModulo = 64;                                           // every X(sleepModulo) loop ticks go to sleep
+        int soundTime = 10;                                             //time of single tune
+        switch (sortSpeed) {
             case 1:
-                sleepTime = 40;
-                moduloSleep = 1;
+                sleepTime = 50;
+                sleepModulo = 1;
+                soundTime = 50;
                 break;
             case 2:
-                sleepTime = 15;
-                moduloSleep = 1;
+                sleepTime = 10;
+                sleepModulo = 1;
+                soundTime = 25;
                 break;
             case 3:
-                sleepTime = 10;
-                moduloSleep = 1;
+                sleepTime = 3;
+                sleepModulo = 1;
+                soundTime = 18;
                 break;
             case 4:
-                sleepTime = 3;
-                moduloSleep = 1;
+                sleepTime = 1;
+                sleepModulo = 1;
+                soundTime = 14;
                 break;
             case 5:
                 sleepTime = 1;
-                moduloSleep = 1;
+                sleepModulo = 2;
+                soundTime = 11;
                 break;
             case 6:
                 sleepTime = 1;
-                moduloSleep = 32;
+                sleepModulo = 8;
+                soundTime = 8;
                 break;
             case 7:
                 sleepTime = 1;
-                moduloSleep = 128;
+                sleepModulo = 128;
+                soundTime = 7;
                 break;
         }
         switch (numOfAlgorithm) {
             case 0:                                                     // Bubble sort
-                currentAlgorithm = new BubbleSort(columns, sleepTime, moduloSleep);
+                currentAlgorithm = new BubbleSort(this, columns, sleepTime, sleepModulo);
                 break;
             case 1:                                                     // Selection sort
-                currentAlgorithm = new SelectionSort(columns, sleepTime, moduloSleep);
+                currentAlgorithm = new SelectionSort(this, columns, sleepTime, sleepModulo);
                 break;
             case 2:                                                     // Insertion sort
-                currentAlgorithm = new InsertionSort(columns, sleepTime, moduloSleep);
-        }
+                currentAlgorithm = new InsertionSort(this, columns, sleepTime, sleepModulo);
+                break;
+            case 3:                                                     // Quick sort
+                currentAlgorithm = new QuickSort(this,columns, sleepTime, sleepModulo);
+                break;
+            case 4:                                                     // Merge sort
+                currentAlgorithm = new MargeSort(this,columns, sleepTime, sleepModulo);
+                break;
+            case 5:                                                     // Radix sort
+                currentAlgorithm = new RadixSort(this,columns, sleepTime, sleepModulo);
+                break;
+            case 6:                                                     // Shell sort
+                currentAlgorithm = new ShellSort(this,columns, sleepTime, sleepModulo);
+                break;
+            case 7:                                                     // Cocktail sort
+                currentAlgorithm = new CocktailSort(this,columns, sleepTime, sleepModulo);
 
+        }
+        observers.add(currentAlgorithm);
         ////    StatsPanel stats:  ////                                 // it's here, not in sendStatsToStatsPanel, because it has to be send ONLY ONCE
 
         elementsListener.numberEmitted(columns.size());                 // elements
 
-        float delay = (float) sleepTime/moduloSleep;                    // Delay
+        float delay = (float) sleepTime/sleepModulo;                    // Delay
         delay = (float) Math.round(delay * 100) / 100;
         delayListener.floatEmitted(delay);
 
         // SOUND
-        //sound.start();
+        sound.setTime(soundTime);
+
+    }
+    private void setSound(int sleepTime, int sleepModulo) {
 
     }
     private void sendStatsToStatsPanel () {
@@ -285,5 +323,33 @@ public class SortPanel extends JPanel implements Runnable{
     }
     public int getSortSpeed() {
         return sortSpeed;
+    }
+    public boolean isSoundOn() {
+        return SoundOn;
+    }
+    public void setSoundOn(boolean soundOn) {
+        SoundOn = soundOn;
+    }
+    public boolean isSortRunning() {
+        return sortRunning;
+    }
+    public boolean isSortReset() {
+        return sortReset;
+    }
+    @Override
+    public void add(Observer observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void remove(Observer observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void inform() {
+        for (Observer ob : observers) {
+            ob.updateRunning();
+        }
     }
 }

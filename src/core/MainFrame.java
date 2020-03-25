@@ -1,5 +1,6 @@
 package core;
 
+import components.listeners.BooleanListener;
 import components.listeners.FloatListener;
 import components.listeners.NumberListener;
 import core.panels.AlgoPanel;
@@ -76,6 +77,13 @@ public class MainFrame extends JFrame{
             @Override
             public void numberEmitted(int number) {
                 if(sortPanel.getSortSpeed() != number) sortPanel.setSortSpeed(number);
+            }
+        });
+        // sound
+        topPanel.setSoundListener(new BooleanListener() {
+            @Override
+            public void booleanEmitted(boolean value) {
+                if(sortPanel.isSoundOn() != value) sortPanel.setSoundOn(value);
             }
         });
 

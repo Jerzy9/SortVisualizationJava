@@ -6,7 +6,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 public class OnOffButton extends JButton implements MouseListener {
-    private int width = 210, height = 70;
+    private int width = 180, height = 70;
     private String text;
     private boolean hover = false, pressed = false;
     private Color color = new Color(242,108,74),
