@@ -1,16 +1,22 @@
-package components;
+package components.timers;
+
+import components.observer_pattern.Observer;
+import core.panels.SortPanel;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class SimpleTimer {
+public class FakeTimer implements MyTimer, Observer {
 
     private Timer timer;
     private TimerTask task;
     private double time;
     private boolean timerRunning = false;
+    private SortPanel sortPanel;
 
-    public SimpleTimer() {
+    public FakeTimer(SortPanel sortPanel) {
+        this.sortPanel = sortPanel;
+
         timer = new Timer();
         task = new TimerTask() {
             @Override
@@ -29,21 +35,26 @@ public class SimpleTimer {
         };
         start();
     }
-    private void start() {
+    @Override
+    public void start() {
         timer.schedule(task, 10,10);
     }
-    public void returnTicking() {       // think of a better name
-        timerRunning = true;
-    }
-    public void pause() {
-        timerRunning = false;
-    }
+    @Override
     public void reset() {
         time = 0;
         timerRunning = false;
     }
     ////    Getters and Setters     ////
+    @Override
     public float getTime() {
         return ((float) time/100);
+    }
+
+    @Override
+    public void updateRunning() {
+        if (sortPanel.isSortReset())
+            reset();
+        else
+            timerRunning = sortPanel.isSortRunning();
     }
 }

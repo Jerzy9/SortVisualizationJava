@@ -10,7 +10,7 @@ public class StatsPanel extends JPanel {
     private int width, height;
     private Color bgColor;
     private int elements = 0,comparisons = 0, conversions = 0;
-    private float time = 0, delay = 0;
+    private float time = 0, delay = 0, realTime;
 
     private TextLabel   elementsLabel, comparisionLabel, conversionsLabel, timeLabel, delayLabel,
                         elementsNumberLabel, comparisionNumberLabel, conversionsNumberLabel, timeNumberLabel, delayNumberLabel;

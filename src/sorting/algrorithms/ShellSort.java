@@ -6,27 +6,41 @@ import sorting.Algorithm;
 
 import java.util.List;
 
-public class InsertionSort extends Algorithm {
+public class ShellSort extends Algorithm {
 
-    public InsertionSort(SortPanel sortPanel, List<Column> columns, int sleepTime, int moduloSleep) {
+    public ShellSort(SortPanel sortPanel, List<Column> columns, int sleepTime, int moduloSleep) {
         super(sortPanel, columns, sleepTime, moduloSleep);
     }
 
     @Override
     public void sort() {
+        int distance;
+        int iteration = 0;
+        do {
+            iteration++;
+            distance = columns.size() / (int) Math.pow(2, iteration);          // creating new distance
+            insertionSort(distance);
 
-        for (int i = 1; i < columns.size(); i++) {
+            //non algorithm
+            countComparisons();
+
+        } while (distance >= 1);
+    }
+
+    private void insertionSort(int d) {
+
+        for (int i = d; i < columns.size(); i++) {
 
             int key = columns.get(i).getHeight();
-            int j = i-1;
+            int j = i;
 
             //non algorithm
             countComparisons();
             changeColumnsColor(comparedColor, i);
             countComparisons();     // double comparison, because if while(false), it doesn't switch columns, but still compare
 
-            while( j >= 0 && columns.get(j).getHeight() > key) {
-                columns.get(j+1).setHeight(columns.get(j).getHeight());
+            while(j >= d && columns.get(j - d).getHeight() > key ) {
+                columns.get(j).setHeight(columns.get(j - d).getHeight());
 
                 //non algorithm
                 soundHeight = columns.get(j).getHeight();                   // SOUND, soundEffect object gets know witch sound it should play
@@ -37,12 +51,13 @@ public class InsertionSort extends Algorithm {
                 checkIfPauseAndReset();
                 changeColumnsColor(normalColor, j);
 
-
-                j--;
+                j -= d;
             }
-            columns.get(j+1).setHeight(key);
+            columns.get(j).setHeight(key);
 
             //non algorithm
+            tickSleep(j);
+            checkIfPauseAndReset();
             countConversions();
             changeColumnsColor(normalColor, i);
         }
