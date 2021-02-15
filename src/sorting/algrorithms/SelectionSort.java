@@ -17,36 +17,31 @@ public class SelectionSort extends Algorithm {
             int min = columns.get(i).getHeight();
             int index = i;
 
-
-
             for (int j = i + 1; j < columns.size(); j++) {
 
+                //non algorithm
+                soundHeight = columns.get(j).getHeight();                   // SOUND, soundEffect object gets know witch sound it should play
                 changeColumnsColor(comparedColor, j);               // change color
-                changeColumnsColor(comparedColor, i);                   // change color
-
+                changeColumnsColor(sortedColor, i);                   // change color
                 countComparisons();
+
                 if(min > columns.get(j).getHeight()) {
                     min = columns.get(j).getHeight();
                     index = j;
-                    //currentHeight = min; //SOUND
                 }
 
+                //non algorithm
                 tickSleep(j);
                 checkIfPauseAndReset();
-
                 changeColumnsColor(normalColor, j);                 // change color back
 
             }
 
             if(columns.get(i).getHeight() != min) {
-                int temp = columns.get(i).getHeight();
-                columns.get(i).setHeight(min);
-                columns.get(index).setHeight(temp);
-
-
-
-                countConversions();
+                swapAndCountConversions(i, index);
             }
+
+            //non algorithm
             changeColumnsColor(normalColor, i);                     // change color back
         }
     }

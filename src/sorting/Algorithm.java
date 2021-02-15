@@ -23,7 +23,9 @@ public abstract class Algorithm implements Runnable, Observer {
                     comparedColor = new Color(242,80,100),
                     normalColor = Color.pink;
     private NumberListener columnHeightListener;
-    public int currentHeight = 0;
+    protected int soundHeight = 0;
+    private int countSleeps = 0;
+
 
     private SortPanel sortPanel;
 
@@ -75,6 +77,7 @@ public abstract class Algorithm implements Runnable, Observer {
     }
     protected void tickSleep(int j) {
         if(j%moduloSleep==0) {
+            countSleeps++;
             try {
                 Thread.sleep(sleepTime);
             } catch (InterruptedException e) {
@@ -102,6 +105,13 @@ public abstract class Algorithm implements Runnable, Observer {
         this.resetSort = sortPanel.isSortReset();
 
     }
+    protected void swapAndCountConversions(int i, int j) {
+        int temp = columns.get(i).getHeight();
+        columns.get(i).setHeight(columns.get(j).getHeight());
+        columns.get(j).setHeight(temp);
+
+        countConversions();
+    }
 
     protected void countComparisons() {
         ++comparisons;
@@ -124,6 +134,12 @@ public abstract class Algorithm implements Runnable, Observer {
         return sorted;
     }
     public int getCurrentColumnHeight() {
-        return currentHeight;
+        return soundHeight;
+    }
+    public int getCountSleeps() {
+        return countSleeps;
+    }
+    public void setCountSleeps(int number) {
+        this.countSleeps = number;
     }
 }

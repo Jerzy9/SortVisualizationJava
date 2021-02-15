@@ -59,6 +59,7 @@ public class RadixSort extends Algorithm {
             columns.get(i).setHeight(output[i]);
 
             //non algorithm
+            soundHeight = columns.get(i).getHeight();                   // SOUND, soundEffect object gets know witch sound it should play
             changeColumnsColor(comparedColor, i);                       // change color
             countComparisons();
             countConversions();

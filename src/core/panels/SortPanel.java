@@ -4,9 +4,10 @@ import components.Column;
 import components.SoundEffect;
 import components.listeners.FloatListener;
 import components.listeners.NumberListener;
-import components.SimpleTimer;
+import components.timers.FakeTimer;
 import components.observer_pattern.Observable;
 import components.observer_pattern.Observer;
+import components.timers.RealTimer;
 import sorting.Algorithm;
 import sorting.algrorithms.*;
 
@@ -34,9 +35,9 @@ public class SortPanel extends JPanel implements Runnable, Observable {
                             comparisonsListener,
                             conversionsListener;
     private FloatListener   delayListener,
-                            timeListener;
+                            fakeTimeListener;
 
-    private SimpleTimer timer;
+    private FakeTimer fakeTimer;
     private SoundEffect sound;
 
     private boolean SoundOn = true;
@@ -54,11 +55,11 @@ public class SortPanel extends JPanel implements Runnable, Observable {
        setSortPanel();
        start();
        createColumns();
-       timer = new SimpleTimer(this);
+       fakeTimer = new FakeTimer(this);
        sound = new SoundEffect(this);
 
        observers.add(sound);
-       observers.add(timer);
+       observers.add(fakeTimer);
 
     }
     // Reactions on pressed Button
@@ -263,24 +264,24 @@ public class SortPanel extends JPanel implements Runnable, Observable {
         }
         observers.add(currentAlgorithm);
         ////    StatsPanel stats:  ////                                 // it's here, not in sendStatsToStatsPanel, because it has to be send ONLY ONCE
-
         elementsListener.numberEmitted(columns.size());                 // elements
 
-        float delay = (float) sleepTime/sleepModulo;                    // Delay
+        float delay = (float) sleepTime / sleepModulo;                    // Delay
         delay = (float) Math.round(delay * 100) / 100;
         delayListener.floatEmitted(delay);
 
         // SOUND
         sound.setTime(soundTime);
 
-    }
-    private void setSound(int sleepTime, int sleepModulo) {
+        // real timer
+        //realTimer.setSleepTime(sleepTime);
 
     }
     private void sendStatsToStatsPanel () {
         comparisonsListener.numberEmitted(currentAlgorithm.getComparisons());
         conversionsListener.numberEmitted(currentAlgorithm.getConversions());
-        timeListener.floatEmitted(timer.getTime());
+        fakeTimeListener.floatEmitted(fakeTimer.getTime());
+        //realTimeListener.floatEmitted(realTimer.getTime());
     }
 
     ////    Getters and Setters     ////
@@ -293,8 +294,8 @@ public class SortPanel extends JPanel implements Runnable, Observable {
     public void setConversionsListener(NumberListener listener) {
         this.conversionsListener = listener;
     }
-    public void setTimeListener(FloatListener listener) {
-        this.timeListener = listener;
+    public void setFakeTimeListener(FloatListener listener) {
+        this.fakeTimeListener = listener;
     }
     public void setDelayListener(FloatListener listener) {
         this.delayListener = listener;

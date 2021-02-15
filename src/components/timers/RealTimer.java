@@ -1,4 +1,4 @@
-package components;
+package components.timers;
 
 import components.observer_pattern.Observer;
 import core.panels.SortPanel;
@@ -6,8 +6,7 @@ import core.panels.SortPanel;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class SimpleTimer implements Observer {
-
+public class RealTimer implements MyTimer, Observer {
 
     private Timer timer;
     private TimerTask task;
@@ -15,8 +14,11 @@ public class SimpleTimer implements Observer {
     private boolean timerRunning = false;
     private SortPanel sortPanel;
 
-    public SimpleTimer(SortPanel sortPanel) {
+    private int sleepTime, comparisons;
+
+    public RealTimer(SortPanel sortPanel) {
         this.sortPanel = sortPanel;
+
         timer = new Timer();
         task = new TimerTask() {
             @Override
@@ -34,25 +36,39 @@ public class SimpleTimer implements Observer {
             }
         };
         start();
+
     }
-    private void start() {
-        timer.schedule(task, 10,10);
+
+    @Override
+    public void start() {
+        timer.schedule(task, 1,1);
+
     }
+
+    @Override
     public void reset() {
         time = 0;
         timerRunning = false;
     }
+
     ////    Getters and Setters     ////
+    @Override
     public float getTime() {
-        return ((float) time/100);
+        return ((float) time-(comparisons*sleepTime));
     }
 
     @Override
     public void updateRunning() {
-        if (sortPanel.isSortReset()) {
+        if (sortPanel.isSortReset())
             reset();
-        }
         else
             timerRunning = sortPanel.isSortRunning();
     }
+    public void setSleepTime(int sleepTime) {
+        this.sleepTime = sleepTime;
+    }
+    public void setComparisons(int comparisons) {
+        this.comparisons = comparisons;
+    }
 }
+

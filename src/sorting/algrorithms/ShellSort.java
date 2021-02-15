@@ -43,6 +43,7 @@ public class ShellSort extends Algorithm {
                 columns.get(j).setHeight(columns.get(j - d).getHeight());
 
                 //non algorithm
+                soundHeight = columns.get(j).getHeight();                   // SOUND, soundEffect object gets know witch sound it should play
                 countComparisons();
                 countConversions();
                 changeColumnsColor(comparedColor, j);
@@ -55,6 +56,8 @@ public class ShellSort extends Algorithm {
             columns.get(j).setHeight(key);
 
             //non algorithm
+            tickSleep(j);
+            checkIfPauseAndReset();
             countConversions();
             changeColumnsColor(normalColor, i);
         }

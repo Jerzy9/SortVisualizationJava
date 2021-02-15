@@ -66,6 +66,7 @@ public class MargeSort extends Algorithm {
             k++;
 
             //non algorithm {
+            soundHeight = columns.get(k-1).getHeight();                   // SOUND, soundEffect object gets know witch sound it should play
             changeColumnsColor(comparedColor, k-1);                   // change color
             tickSleep(getComparisons());                                    // sleep
             checkIfPauseAndReset();
@@ -78,6 +79,7 @@ public class MargeSort extends Algorithm {
             columns.get(k).setHeight(L[i]);
 
             //non algorithm {
+            soundHeight = columns.get(k).getHeight();                   // SOUND, soundEffect object gets know witch sound it should play
             changeColumnsColor(comparedColor, k);                           // change color
             tickSleep(getComparisons());
             checkIfPauseAndReset();
@@ -93,6 +95,7 @@ public class MargeSort extends Algorithm {
             columns.get(k).setHeight(R[j]);
 
             //non algorithm {
+            soundHeight = columns.get(j).getHeight();                   // SOUND, soundEffect object gets know witch sound it should play
             changeColumnsColor(comparedColor, k);                           // change color
             tickSleep(getComparisons());
             checkIfPauseAndReset();

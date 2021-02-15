@@ -106,7 +106,7 @@ public class MainFrame extends JFrame{
                 statsPanel.setConversions(number);
             }
         });
-        sortPanel.setTimeListener(new FloatListener() {
+        sortPanel.setFakeTimeListener(new FloatListener() {
             @Override
             public void floatEmitted(float number) {
                 statsPanel.setTime(number);

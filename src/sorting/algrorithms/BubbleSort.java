@@ -23,21 +23,20 @@ public class BubbleSort extends Algorithm {
                 changeColumnsColor(comparedColor, j);
 
                 if (columns.get(j).getHeight() > columns.get(j+1).getHeight()) {
-                    int temp = columns.get(j).getHeight();
-                    columns.get(j).setHeight(columns.get(j+1).getHeight());
-                    columns.get(j+1).setHeight(temp);
+                    swapAndCountConversions(j, j +1);
 
-                    countConversions();
-
+                    //non algorithm
+                    soundHeight = columns.get(j).getHeight();                   // SOUND, soundEffect object gets know witch sound it should play
                 }
+
+                //non algorithm
                 // sleep after every single tick
                 tickSleep(j);
                 // sleep until on = true, so until user will press START button again
                 checkIfPauseAndReset();
-
                 changeColumnsColor(normalColor, j+1);
                 changeColumnsColor(normalColor, j);
-                currentHeight = columns.get(j).getHeight(); // SOUND
+
             }
 
         }

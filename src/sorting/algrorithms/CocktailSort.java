@@ -25,12 +25,11 @@ public class CocktailSort extends Algorithm {
             for (int i = start; i < end - 1 ; ++i) {
                 changeColumnsColor(comparedColor, i);                               // change color
                 if(columns.get(i).getHeight() > columns.get(i+1).getHeight()) {
-                    swap(i, i+1);
+                    swapAndCountConversions(i, i+1);
                     swapped = true;
 
-                    //countSwaps++;
-
-                    countConversions();
+                    //non algorithm
+                    soundHeight = columns.get(i).getHeight();                   // SOUND, soundEffect object gets know witch sound it should play
                 }
                 //non algorithm
                 countComparisons();
@@ -40,7 +39,7 @@ public class CocktailSort extends Algorithm {
                 //System.out.println(i + " first  swaps: " + countSwaps);
 
             }
-            currentHeight = columns.get(end-1).getHeight();             // SOUND
+
             if(!swapped) break;
             swapped = false;
             end--;
@@ -48,12 +47,10 @@ public class CocktailSort extends Algorithm {
             for (int i = end - 1; i >= start; i--) {
                 changeColumnsColor(comparedColor, i);                               // change color
                 if(columns.get(i).getHeight() > columns.get(i+1).getHeight()) {
-                    swap(i, i+1);
+                    swapAndCountConversions(i, i+1);
                     swapped = true;
 
-                    //countSwaps++;
-
-                    countConversions();
+                    soundHeight = columns.get(i+1).getHeight();                   // SOUND, soundEffect object gets know witch sound it should play
                 }
                 //non algorithm
                 countComparisons();
@@ -63,7 +60,6 @@ public class CocktailSort extends Algorithm {
                 //System.out.println(i + " second  swaps: " + countSwaps);
 
             }
-            currentHeight = columns.get(start).getHeight();             // SOUND
             start++;
             //countSwaps = 0;
             //System.out.println("start: " + start + " end: " + end);
@@ -73,9 +69,5 @@ public class CocktailSort extends Algorithm {
         tickSleep(getComparisons());
         checkIfPauseAndReset();
     }
-    public void swap(int i, int j) {
-        int temp = columns.get(i).getHeight();
-        columns.get(i).setHeight(columns.get(j).getHeight());
-        columns.get(j).setHeight(temp);
-    }
+
 }

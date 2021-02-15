@@ -29,6 +29,7 @@ public class InsertionSort extends Algorithm {
                 columns.get(j+1).setHeight(columns.get(j).getHeight());
 
                 //non algorithm
+                soundHeight = columns.get(j).getHeight();                   // SOUND, soundEffect object gets know witch sound it should play
                 countComparisons();
                 countConversions();
                 changeColumnsColor(comparedColor, j);
